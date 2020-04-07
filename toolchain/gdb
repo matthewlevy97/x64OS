@@ -1,0 +1,3 @@
+#!/bin/sh
+
+/usr/bin/gdb -q -x ${BUILDROOT}/toolchain/gdbinit -se ${BUILDROOT}/sysroot/boot/kernel $@

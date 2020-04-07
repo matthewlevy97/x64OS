@@ -1,0 +1,9 @@
+#!/bin/sh -e
+
+seriallog="${BUILDROOT}/serial.log"
+
+# Build the iso
+${BUILDROOT}/toolchain/mkiso
+
+# Run qemu
+qemu-system-x86_64 -s -S -cdrom ${ISO} -serial file:${seriallog} $@

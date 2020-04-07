@@ -6,6 +6,10 @@ apk add gmp-dev mpfr-dev mpc1-dev
 
 # For making a bootable iso
 apk add grub-bios xorriso
+# For getting git information
+apk add git
+# Python-3 is the standard now
+apk add python3
 # For debugging
 apk add gdb valgrind
 # We need a later version of qemu than included in the default repo

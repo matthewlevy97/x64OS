@@ -1,27 +1,39 @@
 LINKER_SCRIPT=linker.ld
 INCLUDE_DIR=include/
 
-CFLAGS:=$(CFLAGS) --sysroot=$(SYS_ROOT) -isystem=/usr/include
-CFLAGS:=$(CFLAGS) -I$(INCLUDE_DIR)
-CFLAGS:=$(CFLAGS) -O2 -g -std=gnu11 -ffreestanding -Wall -Wextra -nostdlib
+CFLAGS += --sysroot=$(SYSROOT) -isystem=/usr/include
+CFLAGS += -std=gnu11 -ffreestanding -nostdlib
+CFLAGS += -mno-red-zone -mno-mmx -mno-sse -mno-sse2
 
-KERNEL_OBJS=
+CPPFLAGS += -I$(INCLUDE_DIR)
 
-.PHONY: all clean
+LDFLAGS += -n -nostdlib -lgcc -T $(LINKER_SCRIPT)
+
+# Enable Debug symbols?
+ifdef DEBUG
+CFLAGS += -O0 -ggdb -DDEBUG
+ASFLAGS += -ggdb
+else
+CFLAGS += -O3
+endif
+
+include boot/make.config
+KERNEL_OBJS+=\
+	kmain.o
+
+.PHONY: all clean install
 .SUFFIXES: .o .c .S
 
 all: $(KERNEL_BIN)
 
-$(KERNEL_BIN): $(KERNEL_OBJS) $(LINKER_SCRIPT)
-	$(CC) -T $(LINKER_SCRIPT) -o $@ $(CFLAGS) $(LINK_LIST)
+install: all
+	@echo "Copying kernel to $(SYSROOT)/boot/$(KERNEL_BIN)"
+	@mkdir -p $(SYSROOT)/boot
+	@cp -a $(KERNEL_BIN) $(SYSROOT)/boot
 
-.c.o:
-	$(CC) -MD -c $< -o $@ $(CFLAGS)
-
-.S.o:
-	$(CC) -MD -c $< -o $@ $(CFLAGS)
+$(KERNEL_BIN): $(KERNEL_OBJS)
+	$(LINK.c) $^ -o $@
 
 clean:
 	rm -f $(KERNEL_BIN)
 	rm -f $(KERNEL_OBJS)
-	rm -f $(KERNEL_OBJS:.o=.d)

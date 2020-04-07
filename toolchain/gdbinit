@@ -1,0 +1,23 @@
+set disassembly-flavor intel
+
+python
+import os
+gdb.execute('file ' + os.environ['BUILDROOT'] + 'sysroot/boot/kernel')
+end
+
+target remote:1234
+
+set height 0
+set width 0
+
+define q
+monitor quit
+end
+
+define reset
+monitor system_reset
+end
+
+define mmap
+monitor info mem
+end

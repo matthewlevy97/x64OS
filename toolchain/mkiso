@@ -1,0 +1,12 @@
+#!/bin/sh -e
+
+mkdir -p ${SYSROOT}/boot/grub
+cat > ${SYSROOT}/boot/grub/grub.cfg << __EOF__
+set timeout=1
+set default=0
+menuentry "os" {
+  multiboot2 /boot/kernel
+}
+__EOF__
+
+grub-mkrescue -o ${ISO} ${SYSROOT}
