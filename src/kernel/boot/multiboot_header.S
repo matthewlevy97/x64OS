@@ -4,7 +4,7 @@
 .section .multiboot
 .align 0x8
 
-multiboot_header_start:
+.multiboot_header_start:
 	.long MULTIBOOT2_MAGIC
 	.long MULTIBOOT2_ARCH
 	.long MULTIBOOT2_LENGTH
@@ -15,4 +15,4 @@ multiboot_header_start:
 	.short 0 // flags
 	.long  8 // size
 
-multiboot_header_end:
+.multiboot_header_end:

@@ -15,15 +15,13 @@
 TARGET=x86_64-elf
 CC=$(TARGET)-gcc
 LD=$(TARGET)-ld
-CFLAGS=-Wall -Wextra -pedantic
-ASFLAGS=
-LFLAGS=
+AS=$(TARGET)-as
+AR=$(TARGET)-ar
 COMPILE_FLAGS:= \
 	CC="$(CC)" \
 	LD="$(LD)" \
-	CFLAGS="$(CFLAGS)" \
-	ASFLAGS="$(ASFLAGS)" \
-	LFLAGS="$(LFLAGS)"
+	AS="$(AS)" \
+	AR="$(AR)"
 
 # Flags for compiling the kernel
 KERNEL_COMPILE_FLAGS:= \

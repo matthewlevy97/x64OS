@@ -6,6 +6,7 @@ KERNEL_START = 0x10000;
 SECTIONS
 {
 	. = KERNEL_START + KERNEL_OFFSET;
+	_kernel_start = .;
 
 	.text ALIGN(4K) : AT(ADDR(.text) - KERNEL_OFFSET)
 	{
@@ -28,7 +29,6 @@ SECTIONS
 	{
 		*(COMMON)
 		*(.bss)
-		*(.bootstrap_stack)
 	}
 
 	_kernel_end = .;
