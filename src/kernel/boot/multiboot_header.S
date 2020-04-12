@@ -1,6 +1,6 @@
 .intel_syntax noprefix
 
-#include <boot/multiboot.h>
+#include <boot/multiboot2.h>
 .section .multiboot
 .align 0x8
 

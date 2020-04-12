@@ -1,11 +1,12 @@
 #include <amd64/interrupt.h>
+#include <kernel/printk.h>
 #include <string.h>
 
-// Externs
+/* Externs */
 extern void idt_load(void *idtr);
 extern uintptr_t isr_table[];
 
-// IDT Structures
+/* IDT Structures */
 static struct idt_t {
 	uint16_t offset_low;
 	uint16_t cs;	// Code selector
@@ -20,26 +21,23 @@ static struct {
 	uintptr_t addr;
 } __attribute__((packed)) idtr;
 
-// Handler functions
+/* Handler functions */
 static int_handler_t idt_handlers[NUMBER_INTERRUPTS];
 
-// Static Function Definitions
+/* Static Function Definitions */
 static void set_interrupt_gate(uint32_t num, uintptr_t isr, uint16_t cs, uint8_t ist, uint8_t flags);
 
 void idt_init()
 {
 	memset(idt_handlers, 0, sizeof(idt_handlers));
 
-	// Setup the IDT
 	for(int i = 0; i < NUMBER_INTERRUPTS; i++) {
 		set_interrupt_gate(i, isr_table[i], 0x8, 0, IDT_PRESENT | IDT_DPL0 | IDT_INTERRUPT_GATE);
 	}
 
-	// Setup the data for the IDT Register
 	idtr.size = sizeof(idt) - 1;
 	idtr.addr = (uintptr_t)idt;
 
-	// Load the IDT
 	idt_load(&idtr);
 }
 
@@ -56,6 +54,8 @@ registers_t * interrupt_handler(registers_t *regs)
 {
 	if(idt_handlers[regs->int_no])
 		return idt_handlers[regs->int_no](regs);
+	
+	printk("Unhandled Interrupt: 0x%x\n", regs->int_no);
 	return regs;
 }
 

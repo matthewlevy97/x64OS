@@ -6,4 +6,4 @@ seriallog="${BUILDROOT}/serial.log"
 ${BUILDROOT}/toolchain/mkiso
 
 # Run qemu
-qemu-system-x86_64 -s -S -cdrom ${ISO} -serial file:${seriallog} -no-reboot $@
+qemu-system-x86_64 -cdrom ${ISO} -serial file:${seriallog} -no-reboot $@

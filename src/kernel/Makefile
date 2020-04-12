@@ -22,9 +22,12 @@ endif
 KERNEL_OBJS=
 include boot/make.config
 include amd64/make.config
+include io/make.config
 include libc/make.config
-KERNEL_OBJS+=\
-	kmain.o
+include mm/make.config
+KERNEL_OBJS += \
+	kmain.o \
+	printk.o
 
 .PHONY: all install clean
 .SUFFIXES: .o .c .S .S.py

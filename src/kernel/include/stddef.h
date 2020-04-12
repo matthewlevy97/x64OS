@@ -1,6 +1,8 @@
 #pragma once
 
-typedef unsigned long long size_t;
+#include <stdint.h>
+
+typedef uint64_t size_t;
 
 #define NULL 0x00
 

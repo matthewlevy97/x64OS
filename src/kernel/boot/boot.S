@@ -69,6 +69,10 @@ upper_memory:
 	mov rax, KERNEL_OFFSET
 	add rsp, rax
 
+	// Update multiboot pointer address
+	mov rax, KERNEL_OFFSET
+	add rsi, rax
+
 	// Remove identity mapping
 	xor rax, rax
 	movabs [boot_p4], rax
