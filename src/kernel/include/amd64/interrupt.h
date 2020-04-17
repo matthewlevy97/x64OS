@@ -2,6 +2,9 @@
 
 #include <amd64/amd64.h>
 
+#define ENABLE_INTERRUPTS()  do { __asm__ volatile ("sti"); } while(0);
+#define DISABLE_INTERRUPTS() do { __asm__ volatile ("cli"); } while(0);
+
 #define NUMBER_INTERRUPTS 256
 enum {
 	IDT_PRESENT = 1 << 7,

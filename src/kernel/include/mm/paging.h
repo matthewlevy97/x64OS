@@ -32,6 +32,7 @@
 #define PAGING_GET_PTR_ADDRESS(pt) ((uintptr_t)(pt) & (~(PAGE_SIZE - 1)))
 
 void vmm_load_p4(uint64_t *p4);
+uint64_t *vmm_clone_p4();
 
 void vmm_map_page(uintptr_t physical_address, uintptr_t virtual_address);
 void vmm_map_page2(uintptr_t physical_address, uintptr_t virtual_address, uint16_t flags);

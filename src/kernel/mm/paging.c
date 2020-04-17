@@ -1,5 +1,6 @@
 #include <mm/paging.h>
 #include <mm/pmm.h>
+#include <string.h>
 
 static uint64_t *current_p4;
 
@@ -12,6 +13,17 @@ static uint32_t get_p1_index(uintptr_t address);
 void vmm_load_p4(uint64_t *p4)
 {
 	current_p4 = p4;
+}
+
+uint64_t *vmm_clone_p4()
+{
+	uint64_t *p4;
+	p4 = (uint64_t*)pmm_alloc();
+
+	// XXX: Might want to implement CoW here
+	memcpy(P2V(p4), current_p4, PAGE_SIZE);
+
+	return p4;
 }
 
 void vmm_map_page(uintptr_t physical_address, uintptr_t virtual_address)
