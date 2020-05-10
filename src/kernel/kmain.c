@@ -1,3 +1,4 @@
+#include <acpi/acpi.h>
 #include <amd64/cpu.h>
 #include <boot/multiboot2.h>
 #include <io/serial.h>
@@ -17,6 +18,8 @@ void kmain(uint64_t multiboot_magic, void *multiboot_data)
 		PANIC("MM failed to be initialized\n");
 
 	cpu_init();
+
+	acpi_init();
 
 	printk("Kernel loaded!\n");
 

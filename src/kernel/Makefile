@@ -22,6 +22,7 @@ endif
 KERNEL_OBJS=
 include boot/make.config
 include amd64/make.config
+include acpi/make.config
 include io/make.config
 include libc/make.config
 include mm/make.config

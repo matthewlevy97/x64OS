@@ -1,15 +1,17 @@
 #include <boot/multiboot2.h>
-#include <kernel/printk.h>
 #include <kernel/kernel.h>
+#include <kernel/printk.h>
 #include <mm/mm.h>
 #include <mm/paging.h>
 #include <mm/pmm.h>
+#include <stdbool.h>
 #include <string.h>
 
 extern uintptr_t * _kernel_start;
 extern uintptr_t * _kernel_end;
 extern uint64_t boot_p4[];
 
+static void load_and_map_physical_pages(uintptr_t base, uint32_t length);
 static void load_physical_pages(uintptr_t base, uint32_t length);
 
 int mm_init()
@@ -33,21 +35,22 @@ int mm_init()
 	do {
 		switch(entries->type) {
 		case MBOOT2_MM_AVAILABLE:
-			load_physical_pages(entries->base_addr, entries->length);
+			load_and_map_physical_pages(entries->base_addr, entries->length);
 			break;
 		default:
+			load_physical_pages(entries->base_addr, entries->length);
 			break;
 		}
 		
 		entries++;
-	} while(number_entries--);
+	} while(--number_entries);
 
 	return 1;
 init_failed:
 	return 0;
 }
 
-static void load_physical_pages(uintptr_t address, uint32_t length)
+static void load_and_map_physical_pages(uintptr_t address, uint32_t length)
 {
 	uintptr_t end, kend;
 	
@@ -61,6 +64,18 @@ static void load_physical_pages(uintptr_t address, uint32_t length)
 			vmm_map_page(address, (uintptr_t)P2V(address));
 
 		pmm_free(address);
+		address += PAGE_SIZE;
+	}
+}
+
+static void load_physical_pages(uintptr_t address, uint32_t length)
+{
+	uintptr_t end;
+	
+	end = ALIGN(address + length, PAGE_SIZE);
+	while(address < end) {
+		if(!is_virtual_page_present((uintptr_t)P2V(address)))
+			vmm_map_page(address, (uintptr_t)P2V(address));
 		address += PAGE_SIZE;
 	}
 }

@@ -1,0 +1,9 @@
+- Parse ACPI
+- Parse PCI
+- Implement kpanic()
+- Implement heap (kmalloc())
+- Add page fault handler
+- Create systemcalls
+- Threading
+- Multitasking
+- Usermode

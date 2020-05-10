@@ -50,6 +50,10 @@ int printk(const char *format, ...)
 			bytes_written += putstr(convert(va_arg(arg, unsigned long long), 16, buf, sizeof(buf)));
 			ptr++;
 			break;
+		case 's':
+			bytes_written += putstr(va_arg(arg, char*));
+			ptr++;
+			break;
 		}
 	}
 	
