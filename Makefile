@@ -1,16 +1,3 @@
-# Git version information
-#GITHASH := $(shell git log -1 --pretty="tformat:%h")
-#GITDATE := $(shell git log -1 --pretty="tformat:%cd")
-#GITDIRTY := $(shell git status -s >/dev/null 2>/dev/null && echo 1 || echo 0)
-#GITMESSAGE := $(shell git log -1 --pretty="tformat:%s")
-#GITBRANCH := $(shell git log -1 --pretty="tformat:%d")
-#GITFLAGS := \
-#	-DGITHASH='"$(GITHASH)"' \
-#	-DGITDATE='"$(GITDATE)"' \
-#	-DGITDIRTY='$(GITDIRTY)' \
-#	-DGITMESSAGE='"$(GITMESSAGE)"' \
-#	-DGITBRANCH='"$(GITBRANCH)"'
-
 # Flags for compiling
 TARGET=x86_64-elf
 CC=$(TARGET)-gcc

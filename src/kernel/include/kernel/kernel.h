@@ -9,7 +9,5 @@
 
 #define incptr(ptr, x) ((void*)(((char*)(ptr)) + (x)))
 
-#define PANIC(x) while(1);
-
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))

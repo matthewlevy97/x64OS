@@ -1,5 +1,5 @@
 #include <amd64/interrupt.h>
-#include <kernel/printk.h>
+#include <kernel/debug.h>
 #include <string.h>
 
 /* Externs */
@@ -55,7 +55,7 @@ registers_t * interrupt_handler(registers_t *regs)
 	if(idt_handlers[regs->int_no])
 		return idt_handlers[regs->int_no](regs);
 	
-	printk("Unhandled Interrupt: 0x%x\n", regs->int_no);
+	debug_warning("Unhandled Interrupt: 0x%x\n", regs->int_no);
 	return regs;
 }
 

@@ -1,5 +1,6 @@
 #include <acpi/acpi.h>
 #include <boot/multiboot2.h>
+#include <kernel/debug.h>
 #include <mm/paging.h>
 #include <stdbool.h>
 #include <string.h>
@@ -54,6 +55,8 @@ static void parse_acpi(struct RSDPDescriptor *rsdp)
 
 		if(!strncmp(header->signature, "FACP", sizeof(header->signature))) {
 			parse_fadt(header);
+		} else {
+			debug_info("Unknown ACPI Table: %s\n", header->signature);
 		}
 	}
 	

@@ -1,10 +1,20 @@
 LINKER_SCRIPT=linker.ld
 INCLUDE_DIR=include/
 
-CFLAGS ?= -Wall -Wextra -pedantic
+# Git Information
+GITHASH := $(shell git log -1 --pretty="tformat:%h")
+GITDATE := $(shell git log -1 --pretty="tformat:%cd")
+GITBRANCH := $(shell git log -1 --pretty="tformat:%d" | tr -d '[:space:]')
+GITFLAGS := \
+   -DGITHASH='"$(GITHASH)"' \
+   -DGITDATE='"$(GITDATE)"' \
+   -DGITBRANCH='"$(GITBRANCH)"'
+
+CFLAGS := -Wall -Wextra -pedantic
 CFLAGS += --sysroot=$(SYSROOT) -isystem=/usr/include -mcmodel=large
 CFLAGS += -std=c11 -ffreestanding -nostdlib
 CFLAGS += -mno-red-zone -mno-mmx -mno-sse -mno-sse2
+CFLAGS += $(GITFLAGS)
 
 CPPFLAGS ?= -I$(INCLUDE_DIR)
 
@@ -13,7 +23,7 @@ LDFLAGS ?= -n -nostdlib -lgcc -T $(LINKER_SCRIPT)
 # Enable Debug symbols?
 DEBUG=1
 ifdef DEBUG
-CFLAGS += -O0 -ggdb -DDEBUG
+CFLAGS += -O0 -ggdb -DKERNEL_DEBUG
 ASFLAGS += -ggdb
 else
 CFLAGS += -O3

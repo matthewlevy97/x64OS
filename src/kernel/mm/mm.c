@@ -1,6 +1,5 @@
 #include <boot/multiboot2.h>
 #include <kernel/kernel.h>
-#include <kernel/printk.h>
 #include <mm/mm.h>
 #include <mm/paging.h>
 #include <mm/pmm.h>

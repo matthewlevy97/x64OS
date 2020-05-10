@@ -1,9 +1,10 @@
 #include <acpi/acpi.h>
 #include <amd64/cpu.h>
+#include <assert.h>
 #include <boot/multiboot2.h>
 #include <io/serial.h>
+#include <kernel/debug.h>
 #include <kernel/kernel.h>
-#include <kernel/printk.h>
 #include <mm/mm.h>
 #include <stdint.h>
 
@@ -21,7 +22,7 @@ void kmain(uint64_t multiboot_magic, void *multiboot_data)
 
 	acpi_init();
 
-	printk("Kernel loaded!\n");
+	debug_info("Kernel loaded!\n");
 
 	while(1);
 	return;

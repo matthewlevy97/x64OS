@@ -1,6 +1,6 @@
 #include <amd64/pic.h>
 #include <io/ports.h>
-#include <kernel/printk.h>
+#include <kernel/debug.h>
 
 void pic_init()
 {
@@ -53,7 +53,7 @@ registers_t *irq_default_handler(registers_t *regs)
 	// Acknowledge IRQs
 	pic_acknowledge(regs->int_no);
 
-	printk("Unhandled IRQ: 0x%x\n", regs->int_no);
+	debug_warning("Unhandled IRQ: 0x%x\n", regs->int_no);
 
 	return regs;
 }
