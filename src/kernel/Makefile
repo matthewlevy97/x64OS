@@ -23,7 +23,7 @@ LDFLAGS ?= -n -nostdlib -lgcc -T $(LINKER_SCRIPT)
 # Enable Debug symbols?
 DEBUG=1
 ifdef DEBUG
-CFLAGS += -O0 -ggdb -DKERNEL_DEBUG
+CFLAGS += -O0 -ggdb -D_KERNEL_DEBUG
 ASFLAGS += -ggdb
 else
 CFLAGS += -O3

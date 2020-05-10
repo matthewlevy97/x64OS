@@ -56,7 +56,7 @@ static void parse_acpi(struct RSDPDescriptor *rsdp)
 		if(!strncmp(header->signature, "FACP", sizeof(header->signature))) {
 			parse_fadt(header);
 		} else {
-			debug_info("Unknown ACPI Table: %s\n", header->signature);
+			debug_warning("Unknown ACPI Table: %s\n", header->signature);
 		}
 	}
 	

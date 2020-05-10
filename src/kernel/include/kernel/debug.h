@@ -6,7 +6,7 @@
 #define S_(x) S(x)
 #define S__LINE__ S_(__LINE__)
 
-#ifdef KERNEL_DEBUG
+#ifdef _KERNEL_DEBUG
 	#define debug(...) printk(__VA_ARGS__)
 	#define debug_info(...) \
 		do {debug("[INFO]    "); debug(__VA_ARGS__);} while(0);
