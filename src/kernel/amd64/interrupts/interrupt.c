@@ -55,7 +55,7 @@ registers_t * interrupt_handler(registers_t *regs)
 	if(idt_handlers[regs->int_no])
 		return idt_handlers[regs->int_no](regs);
 	
-	debug_warning("Unhandled Interrupt: 0x%x\n", regs->int_no);
+	PANIC("Unhandled Interrupt: 0x%x\n", regs->int_no);
 	return regs;
 }
 

@@ -2,7 +2,7 @@
 #include <mm/pmm.h>
 #include <string.h>
 
-static uint64_t *current_p4;
+static page_directory_t current_p4;
 
 static inline uint64_t *get_p1(uintptr_t virtual_address);
 static uint32_t get_p4_index(uintptr_t address);
@@ -10,12 +10,17 @@ static uint32_t get_p3_index(uintptr_t address);
 static uint32_t get_p2_index(uintptr_t address);
 static uint32_t get_p1_index(uintptr_t address);
 
-void vmm_load_p4(uint64_t *p4)
+void vmm_load_page_dir(page_directory_t page_dir)
 {
-	current_p4 = p4;
+	current_p4 = page_dir;
 }
 
-uint64_t *vmm_clone_p4()
+page_directory_t vmm_get_page_dir()
+{
+	return current_p4;
+}
+
+page_directory_t vmm_clone_page_dir()
 {
 	uint64_t *p4;
 	p4 = (uint64_t*)pmm_alloc();
@@ -23,7 +28,7 @@ uint64_t *vmm_clone_p4()
 	// XXX: Might want to implement CoW here
 	memcpy(P2V(p4), current_p4, PAGE_SIZE);
 
-	return p4;
+	return (page_directory_t)p4;
 }
 
 void vmm_map_page(uintptr_t physical_address, uintptr_t virtual_address)

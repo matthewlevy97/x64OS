@@ -42,6 +42,39 @@ int strncmp(const char *s1, const char *s2, size_t n)
 	return val;
 }
 
+char *strcpy(char *dest, const char *src)
+{
+	char *d, *s;
+
+	d = dest;
+	s = (char*)src;
+
+	while(*s) {
+		*d++ = *s++;
+	}
+	*d = *s; // Copy NULL byte
+
+	return dest;
+}
+
+char *strncpy(char *dest, const char *src, size_t n)
+{
+	char *d, *s;
+
+	d = dest;
+	s = (char*)src;
+
+	while(*s && --n) {
+		*d++ = *s++;
+	}
+	
+	while(--n) {
+		*d = '\0';
+	}
+
+	return dest;
+}
+
 void *memset(void *s, int c, size_t n)
 {
 	char *ptr;
