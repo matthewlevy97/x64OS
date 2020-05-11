@@ -113,9 +113,7 @@ bool is_virtual_page_present(uintptr_t page)
 
 registers_t *page_fault_handler(registers_t *regs)
 {
-	if(regs->rip < KERNEL_OFFSET) {
-		// PAGE FAULT FROM USERMODE
-
+	if(regs->rip < KERNEL_OFFSET || regs->cr2 <= PAGE_SIZE) {
 		PANIC("Page Fault @ 0x%x\nAccessing: 0x%x\tError Code: %d\n",
 			regs->rip, regs->cr2, regs->err_code);
 	}
