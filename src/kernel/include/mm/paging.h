@@ -27,10 +27,12 @@
 #ifndef __ASSEMBLER__
 
 #include <amd64/amd64.h>
+#include <kernel/kernel.h>
 #include <stdbool.h>
 #include <stdint.h>
 
 #define PAGING_GET_PTR_ADDRESS(pt) ((uintptr_t)(pt) & (~(PAGE_SIZE - 1)))
+#define ALIGN_PAGE(x) ALIGN((x), PAGE_SIZE)
 
 typedef uint64_t* page_directory_t;
 

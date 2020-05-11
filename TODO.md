@@ -1,6 +1,5 @@
 - Parse ACPI
 - Parse PCI
-- Implement heap (kmalloc())
 - Create systemcalls
 - Improve scheduler
 	- Jump into user mode (if needed)

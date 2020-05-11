@@ -24,6 +24,7 @@
 	#define debug_error(...)
 #endif
 
+#undef PANIC
 #define PANIC(...) do {\
 		debug("\n\n-----------------------------\n");\
 		debug("KERNEL PANIC! [%s:%d]\n", __FILE__, __LINE__);\

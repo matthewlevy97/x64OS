@@ -5,14 +5,16 @@
 #include <io/serial.h>
 #include <kernel/debug.h>
 #include <kernel/kernel.h>
+#include <mm/kmalloc.h>
 #include <mm/mm.h>
 #include <process/process.h>
 #include <process/scheduler.h>
 #include <stdint.h>
+#include <mm/pmm.h>
 
 void stage_2()
 {
-	debug_info("Kernel loaded!\n");
+	debug_ok("Kernel loaded!\n");
 
 	while(1) scheduler_run();
 }
@@ -27,13 +29,16 @@ void kmain(uint64_t multiboot_magic, void *multiboot_data)
 	if(!mm_init())
 		PANIC("MM failed to be initialized\n");
 
+	kmalloc_init(KERNEL_GLOBAL_HEAP_START);
+	debug_ok("Global Kmalloc Initialized\n");
+
 	cpu_init();
-	debug_info("CPU Initialized\n");
+	debug_ok("CPU Initialized\n");
 
 	acpi_init();
-	debug_info("ACPI Initialized\n");
+	debug_ok("ACPI Initialized\n");
 
-	scheduler_init(process_create(NULL, "stage 2", true, stage_2));
+	scheduler_init(process_create(NULL, "stage2", true, stage_2));
 
 	while(1);
 	return;

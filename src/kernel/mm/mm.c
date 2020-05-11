@@ -5,6 +5,7 @@
 #include <mm/pmm.h>
 #include <stdbool.h>
 #include <string.h>
+#include <kernel/debug.h>
 
 extern uintptr_t * _kernel_start;
 extern uintptr_t * _kernel_end;
@@ -60,8 +61,8 @@ static void load_and_map_physical_pages(uintptr_t address, uint32_t length)
 	end = ALIGN(address + length, PAGE_SIZE);
 	while(address < end) {
 		if(!is_virtual_page_present((uintptr_t)P2V(address)))
-			vmm_map_page(address, (uintptr_t)P2V(address));
-
+			vmm_map_page2(address, (uintptr_t)P2V(address), PAGE_PRESENT | PAGE_WRITE);
+		
 		pmm_free(address);
 		address += PAGE_SIZE;
 	}
@@ -74,7 +75,7 @@ static void load_physical_pages(uintptr_t address, uint32_t length)
 	end = ALIGN(address + length, PAGE_SIZE);
 	while(address < end) {
 		if(!is_virtual_page_present((uintptr_t)P2V(address)))
-			vmm_map_page(address, (uintptr_t)P2V(address));
+			vmm_map_page2(address, (uintptr_t)P2V(address), PAGE_PRESENT | PAGE_WRITE);
 		address += PAGE_SIZE;
 	}
 }

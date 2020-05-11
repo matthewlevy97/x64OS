@@ -113,7 +113,16 @@ bool is_virtual_page_present(uintptr_t page)
 
 registers_t *page_fault_handler(registers_t *regs)
 {
-	PANIC("Page Fault @ 0x%x\nAccessing: 0x%x\n", regs->rip, regs->cr2);
+	if(regs->rip < KERNEL_OFFSET) {
+		// PAGE FAULT FROM USERMODE
+
+		PANIC("Page Fault @ 0x%x\nAccessing: 0x%x\tError Code: %d\n",
+			regs->rip, regs->cr2, regs->err_code);
+	}
+
+	// TODO: This is a really naive approach to fixing page faults, do something better
+	vmm_map_page(pmm_calloc(), regs->cr2);
+
 	return regs;
 }
 
