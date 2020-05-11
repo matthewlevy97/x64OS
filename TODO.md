@@ -1,7 +1,0 @@
-- Parse ACPI
-- Parse PCI
-- Create systemcalls
-- Improve scheduler
-	- Jump into user mode (if needed)
-	- Add thread/process removal
-- Usermode
