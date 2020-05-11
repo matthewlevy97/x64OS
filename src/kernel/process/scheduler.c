@@ -1,5 +1,8 @@
+#include <mm/paging.h>
+#include <mm/paging_helpers.h>
 #include <process/scheduler.h>
 #include <process/stack_switch.h>
+#include <kernel/debug.h>
 
 static process_t *current_process;
 
@@ -9,33 +12,34 @@ static process_t *process_list[16];
 
 void scheduler_init(process_t *process)
 {
+	uint64_t tmp;
+
 	current_process_num = 0;
 	number_processes    = 0;
 
-	process_list[number_processes++] = process;
+	scheduler_add_process(process);
 	current_process = process;
+	
+	vmm_load_page_dir(current_process->page_directory);
 
-	uint64_t tmp;
-	// TODO: This is realllllllly a bad way to do this, but PoC anybody?
-	stack_switch(&tmp, &(current_process->thread_list[0]->stack_pointer));
+	stack_switch(&tmp, &(current_process->stack_pointer), current_process->page_directory);
 }
 
 void scheduler_run()
 {
+	process_t *prev_process;
 	// TODO: Make function atomic
-
-	thread_t *current_thread, *next_thread;
-	process_t *next_process;
-
-	next_process = process_list[(++current_process_num) % number_processes];
-	next_thread = next_process->thread_list[0];
-	current_thread = current_process->thread_list[0];
+	
+	prev_process = current_process;
+	current_process = process_list[++current_process_num % number_processes];
+	if(prev_process == current_process) return;
 
 	// TODO: Set TSS
-	// TODO: Change page directory if needed
+	
+	vmm_load_page_dir(current_process->page_directory);
 
-	current_process = next_process;
-	stack_switch(&(current_thread->stack_pointer), &(next_thread->stack_pointer));
+	// Switch stacks
+	stack_switch(&(prev_process->stack_pointer), &(current_process->stack_pointer), current_process->page_directory);
 }
 
 void scheduler_add_process(process_t *process)

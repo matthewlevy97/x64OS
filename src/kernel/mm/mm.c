@@ -18,7 +18,7 @@ int mm_init()
 	multiboot2_mm_entry_tag_t *entries;
 	uint32_t number_entries;
 	void *mm_tag;
-
+	
 	vmm_load_page_dir(boot_p4);
 
 	mm_tag = multiboot2_get_tag(MBOOT2_MM);

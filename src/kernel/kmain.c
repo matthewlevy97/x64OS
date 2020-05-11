@@ -12,12 +12,9 @@
 
 void stage_2()
 {
-	debug_info("Stage 2 Loaded!\n");
-
-	dump_process(get_current_process());
-
 	debug_info("Kernel loaded!\n");
-	while(1);
+
+	while(1) scheduler_run();
 }
 
 void kmain(uint64_t multiboot_magic, void *multiboot_data)
@@ -36,8 +33,7 @@ void kmain(uint64_t multiboot_magic, void *multiboot_data)
 	acpi_init();
 	debug_info("ACPI Initialized\n");
 
-	process_t *stage2 = process_create("stage 2", 0, vmm_get_page_dir(), stage_2);
-	scheduler_init(stage2);
+	scheduler_init(process_create(NULL, "stage 2", true, stage_2));
 
 	while(1);
 	return;

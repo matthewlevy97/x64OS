@@ -1,7 +1,6 @@
 #pragma once
 
 #include <process/process.h>
-#include <process/thread.h>
 
 void scheduler_init();
 void scheduler_run();

@@ -10,10 +10,10 @@
 #else
 
 #include <boot/multiboot2_spec.h>
+#include <mm/maddrs.h>
 #include <stddef.h>
 
 #define MULTIBOOT2_MAGIC               0x36D76289 // Reply
-#define MULTIBOOT2_RELOCATION_ADDRESS  0xFFFFFF8000000000
 
 int multiboot2_init(uint64_t magic, void *data);
 multiboot2_header_tag_t *multiboot2_get_tag(enum multiboot2_tag_type type);

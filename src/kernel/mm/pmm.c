@@ -1,7 +1,7 @@
 #include <mm/pmm.h>
 #include <mm/paging.h>
 #include <string.h>
-
+#include <kernel/debug.h>
 /**
  * This is a dirty simple Physical Memory Manager.
  * I will eventually create a more efficent one than a linked-list
@@ -20,7 +20,7 @@ uintptr_t pmm_alloc()
 
 	page = (uintptr_t)tail;
 	tail = tail->next;
-
+	
 	return V2P(page);
 }
 

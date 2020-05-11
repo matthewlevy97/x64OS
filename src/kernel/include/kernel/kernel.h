@@ -8,6 +8,7 @@
 #define ALIGN_64(x) ALIGN(x, 64)
 
 #define incptr(ptr, x) ((void*)(((char*)(ptr)) + (x)))
+#define decptr(ptr, x) ((void*)(((char*)(ptr)) - (x)))
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))

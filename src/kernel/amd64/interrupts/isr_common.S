@@ -23,10 +23,22 @@ isr_common:
 	push rbx
 	push rax
 
+	mov rax, cr4
+	push rax
+	mov rax, cr3
+	push rax
+	mov rax, cr2
+	push rax
+	mov rax, cr0
+	push rax
+
 	mov rdi, rsp
 	call interrupt_handler
 .isr_return:
 	mov rsp, rax
+
+	// Clear CRX values
+	add rsp, 0x20
 
 	pop rax
 	pop rbx

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <mm/paging.h>
-#include <process/thread.h>
 #include <stddef.h>
 
 #define PROCESS_NAME_LENGTH 128
@@ -13,23 +12,22 @@ typedef enum {
 } PROCESS_STATE;
 
 typedef struct {
-	uint64_t pid;
+	uint64_t pid, ppid;
 	char name[PROCESS_NAME_LENGTH];
-	bool user;
+	bool kernel_mode;
 	
 	PROCESS_STATE state;
 	int exit_value;
 	
 	page_directory_t page_directory;
-	void *kernel_stack;
 	
 	void (*entry_point)(void);
 	
-	// TODO: Make this a cyclic list so that the scheduler only needs to load task_list[0]
-	thread_t *thread_list[PROCESS_MAX_THREAD_COUNT];
-	uint64_t tid_counter;
+	uint64_t tid, next_tid;
+	void *stack_pointer;
+	void *tss_stack_pointer;
 } process_t;
 
-process_t *process_create(const char *process_name, bool user, page_directory_t page_directory, void (*entry_point)(void));
+process_t *process_create(process_t *parent_proc, const char *process_name, bool user, void (*entry_point)(void));
 
 void dump_process(process_t *process);

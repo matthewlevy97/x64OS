@@ -21,3 +21,15 @@ end
 define mmap
 monitor info mem
 end
+
+define V2P
+	if $argc == 1
+		print/x $arg0 - 0xFFFFFF8000000000
+	end
+end
+
+define P2V
+	if $argc == 1
+		print/x $arg0 + 0xFFFFFF8000000000
+	end
+end

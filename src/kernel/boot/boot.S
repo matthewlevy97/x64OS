@@ -26,9 +26,10 @@ _start:
 	mov esp, offset V2P(boot_stack)
 	xor ebp, ebp
 
-	// Enable PAE
+	// Enable PAE and PGE
 	mov eax, cr4
 	or eax, (1 << 5)
+	or eax, (1 << 7)
 	mov cr4, eax
 
 	// Load a P4 page table

@@ -17,6 +17,11 @@ stack_switch:
 	mov [rdi], rsp
 	mov rsp, [rsi]
 
+	// Reload CR3 with the new page descriptor
+	shl rdx, 25
+	shr rdx, 25
+	mov cr3, rdx
+
 	pop rbp
 	pop rbx
 	pop r12

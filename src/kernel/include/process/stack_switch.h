@@ -12,4 +12,4 @@ struct stack_switch_registers
   uint64_t ret;
 };
 
-void stack_switch(void *old_stack_ptr, void *new_stack_ptr);
+void stack_switch(void *old_stack_ptr, void *new_stack_ptr, void *page_directory);
