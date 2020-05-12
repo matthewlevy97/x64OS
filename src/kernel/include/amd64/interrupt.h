@@ -5,6 +5,10 @@
 #define ENABLE_INTERRUPTS()  do { __asm__ volatile ("sti"); } while(0);
 #define DISABLE_INTERRUPTS() do { __asm__ volatile ("cli"); } while(0);
 
+#define IRQ_BASE                       0x20
+#define IRQ_LENGTH                     0xF
+#define IRQ_TO_ISR(x) ((x) + (IRQ_BASE))
+
 #define NUMBER_INTERRUPTS 256
 enum {
 	IDT_PRESENT = 1 << 7,

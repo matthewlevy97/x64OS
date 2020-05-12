@@ -23,9 +23,6 @@
 
 #define PIC_ICW4                       0x1
 
-#define IRQ_BASE                       0x20
-#define IRQ_LENGTH                     0xF
-
 enum pic_interrupts {
 	PIC_INTERNAL_TIMER  = 1 << 0,
 	PIC_KEYBOARD        = 1 << 1,

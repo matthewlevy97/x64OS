@@ -1,5 +1,6 @@
 .intel_syntax noprefix
 
+.extern atomic_end_force
 .global stack_switch
 
 .section .text
@@ -22,8 +23,8 @@ stack_switch:
 	shr rdx, 25
 	mov cr3, rdx
 
-	// XXX: Should I be starting interrupts here???
-	sti
+	// TODO: Should I be starting interrupts here???
+	call atomic_end_force
 
 	pop rbp
 	pop rbx

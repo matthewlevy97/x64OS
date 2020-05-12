@@ -17,7 +17,7 @@ void stage_2()
 {
 	debug_ok("Kernel loaded!\n");
 
-	while(1) scheduler_run();
+	while(1);
 }
 
 void kmain(uint64_t multiboot_magic, void *multiboot_data)
