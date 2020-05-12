@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <boot/multiboot2.h>
 #include <io/serial.h>
+#include <kernel/atomic.h>
 #include <kernel/debug.h>
 #include <kernel/kernel.h>
 #include <mm/kmalloc.h>
@@ -37,6 +38,9 @@ void kmain(uint64_t multiboot_magic, void *multiboot_data)
 
 	acpi_init();
 	debug_ok("ACPI Initialized\n");
+
+	// Must not be in an atomic state at this point
+	ASSERT(!is_atomic());
 
 	scheduler_init(process_create(NULL, "stage2", true, stage_2));
 

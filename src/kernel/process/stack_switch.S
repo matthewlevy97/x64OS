@@ -22,6 +22,9 @@ stack_switch:
 	shr rdx, 25
 	mov cr3, rdx
 
+	// XXX: Should I be starting interrupts here???
+	sti
+
 	pop rbp
 	pop rbx
 	pop r12

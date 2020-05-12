@@ -35,11 +35,9 @@ include acpi/make.config
 include amd64/make.config
 include io/make.config
 include libc/make.config
+include make.config
 include mm/make.config
 include process/make.config
-KERNEL_OBJS += \
-	kmain.o \
-	printk.o
 
 .PHONY: all install clean
 .SUFFIXES: .o .c .S .S.py

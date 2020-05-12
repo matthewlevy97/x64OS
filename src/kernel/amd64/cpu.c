@@ -1,12 +1,13 @@
 #include <amd64/interrupt.h>
 #include <amd64/interrupt_handlers.h>
 #include <amd64/pic.h>
+#include <kernel/atomic.h>
 #include <kernel/debug.h>
 #include <mm/paging.h>
 
 void cpu_init()
 {
-	DISABLE_INTERRUPTS();
+	atomic_begin();
 
 	idt_init();
 
@@ -17,5 +18,5 @@ void cpu_init()
 	register_interrupt_handler(0xD, general_protection_fault);
 	register_interrupt_handler(0xE, page_fault_handler);
 	
-	ENABLE_INTERRUPTS();
+	atomic_end();
 }

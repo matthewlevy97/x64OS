@@ -2,6 +2,7 @@
 #include <mm/paging_helpers.h>
 #include <process/scheduler.h>
 #include <process/stack_switch.h>
+#include <kernel/atomic.h>
 #include <kernel/debug.h>
 
 static process_t *current_process;
@@ -28,7 +29,8 @@ void scheduler_init(process_t *process)
 void scheduler_run()
 {
 	process_t *prev_process;
-	// TODO: Make function atomic
+	
+	atomic_begin();
 	
 	prev_process = current_process;
 	current_process = process_list[++current_process_num % number_processes];
@@ -38,6 +40,7 @@ void scheduler_run()
 	
 	vmm_load_page_dir(current_process->page_directory);
 
+	// Note: Atomic end ("sti") implicitly called in stack_switch
 	// Switch stacks
 	stack_switch(&(prev_process->stack_pointer), &(current_process->stack_pointer), current_process->page_directory);
 }

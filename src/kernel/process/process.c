@@ -1,3 +1,4 @@
+#include <kernel/atomic.h>
 #include <kernel/debug.h>
 #include <kernel/kernel.h>
 #include <mm/maddrs.h>
@@ -15,7 +16,7 @@ process_t *process_create(process_t *parent_proc, const char *process_name, bool
 {
 	process_t *proc;
 	
-	// TODO: Make function atomic
+	atomic_begin();
 
 	proc = P2V(pmm_calloc());
 	proc->pid = ++current_pid;
@@ -45,6 +46,8 @@ process_t *process_create(process_t *parent_proc, const char *process_name, bool
 	proc->next_tid = proc->tid + 1;
 
 	setup_stack(proc);
+
+	atomic_end();
 
 	return proc;
 }
