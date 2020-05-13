@@ -36,6 +36,8 @@ void kmain(uint64_t multiboot_magic, void *multiboot_data)
 	cpu_init();
 	debug_ok("CPU Initialized\n");
 
+	timer_init();
+
 	acpi_init();
 	debug_ok("ACPI Initialized\n");
 
