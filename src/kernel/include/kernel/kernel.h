@@ -1,5 +1,8 @@
 #pragma once
 
+#define STR(x) #x
+#define STR_(x) S(x)
+
 #define ALIGN(x, y) (((x) + ((y)-1)) & ~((y)-1))
 
 #define ALIGN_8(x) ALIGN(x, 8)

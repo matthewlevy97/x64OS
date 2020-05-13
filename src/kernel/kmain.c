@@ -6,12 +6,13 @@
 #include <kernel/atomic.h>
 #include <kernel/debug.h>
 #include <kernel/kernel.h>
+#include <kernel/timer.h>
 #include <mm/kmalloc.h>
 #include <mm/mm.h>
+#include <mm/pmm.h>
 #include <process/process.h>
 #include <process/scheduler.h>
 #include <stdint.h>
-#include <mm/pmm.h>
 
 void stage_2()
 {

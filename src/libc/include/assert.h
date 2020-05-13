@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef PANIC
-#define PANIC(x)
+#define PANIC(...)
 #endif
 
 #define ASSERT(expr) do {\

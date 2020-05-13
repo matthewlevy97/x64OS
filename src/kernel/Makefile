@@ -1,53 +1,37 @@
 LINKER_SCRIPT=linker.ld
-INCLUDE_DIR=include/
+LIBC_DIRECTORY=../libc
+KERNEL_BIN=kernel
 
-# Git Information
-GITHASH := $(shell git log -1 --pretty="tformat:%h")
-GITDATE := $(shell git log -1 --pretty="tformat:%cd")
-GITBRANCH := $(shell git log -1 --pretty="tformat:%d" | tr -d '[:space:]')
-GITFLAGS := \
-   -DGITHASH='"$(GITHASH)"' \
-   -DGITDATE='"$(GITDATE)"' \
-   -DGITBRANCH='"$(GITBRANCH)"'
-
-CFLAGS := -Wall -Wextra -pedantic
-CFLAGS += --sysroot=$(SYSROOT) -isystem=/usr/include -mcmodel=large
-CFLAGS += -std=c11 -ffreestanding -nostdlib
-CFLAGS += -mno-red-zone -mno-mmx -mno-sse -mno-sse2
-CFLAGS += $(GITFLAGS)
-
-CPPFLAGS ?= -I$(INCLUDE_DIR)
-
-LDFLAGS ?= -n -nostdlib -lgcc -T $(LINKER_SCRIPT)
-
-# Enable Debug symbols?
-DEBUG=1
-ifdef DEBUG
-CFLAGS += -O0 -ggdb -D_KERNEL_DEBUG
-ASFLAGS += -ggdb
-else
-CFLAGS += -O3
-endif
+CFLAGS := $(KERNEL_CFLAGS)
+CPPFLAGS := $(KERNEL_CPPFLAGS) -I$(LIBC_DIRECTORY)/include
+LDFLAGS := $(KERNEL_LDFLAGS) -T $(LINKER_SCRIPT)
+ASFLAGS := $(KERNEL_ASFLAGS)
 
 KERNEL_OBJS=
 include boot/make.config
 include acpi/make.config
 include amd64/make.config
 include io/make.config
-include libc/make.config
 include make.config
 include mm/make.config
 include process/make.config
+KERNEL_OBJS += $(SYSROOT)/usr/bin/libk.o
 
-.PHONY: all install clean
+.PHONY: all install install-binary install-headers clean
 .SUFFIXES: .o .c .S .S.py
 
 all: $(KERNEL_BIN)
 
-install: all
+install: all install-binary install-headers
+
+install-binary:
 	@echo "Copying kernel to $(SYSROOT)/boot/$(KERNEL_BIN)"
 	@mkdir -p $(SYSROOT)/boot
 	@cp -a $(KERNEL_BIN) $(SYSROOT)/boot
+
+install-headers:
+	@mkdir -p $(SYSROOT)/usr/include/$(KERNEL_BIN)
+	@cp -a include/* $(SYSROOT)/usr/include/$(KERNEL_BIN)
 
 $(KERNEL_BIN): $(KERNEL_OBJS)
 	$(LINK.c) $^ -o $@

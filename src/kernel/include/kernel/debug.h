@@ -2,9 +2,7 @@
 
 #include <kernel/printk.h>
 
-#define S(x) #x
-#define S_(x) S(x)
-#define S__LINE__ S_(__LINE__)
+#define S__LINE__ STR_(__LINE__)
 
 #ifdef _KERNEL_DEBUG
 	#define debug(...) printk(__VA_ARGS__)
