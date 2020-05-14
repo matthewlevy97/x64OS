@@ -6,7 +6,7 @@ LIBK_CFLAGS := $(KERNEL_CFLAGS) -D__IS_LIBK
 LIBK_CPPFLAGS := $(KERNEL_CPPFLAGS)
 
 LIBC_OBJS :=
-include make.config
+include src/make.config
 LIBK_OBJS := $(LIBC_OBJS:.o=.libk.o)
 
 .PHONY: all install-binary install-headers clean
