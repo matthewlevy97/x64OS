@@ -1,0 +1,32 @@
+#pragma once
+
+#include <stddef.h>
+
+struct linked_list_entry {
+	struct linked_list_entry *next, *prev;
+	
+	size_t key;
+	void *value;
+};
+
+struct __linked_list_metadata {
+	size_t length;
+	
+	struct linked_list_entry *head;
+};
+typedef struct __linked_list_metadata * List;
+
+List linked_list_create();
+void linked_list_destroy(List *list);
+
+List linked_list_rotate(List list);
+
+size_t linked_list_length(List list);
+
+List linked_list_insert(List list, size_t key, void *value);
+
+List linked_list_remove_by_key(List list, size_t key);
+List linked_list_remove_by_index(List list, size_t index);
+
+void *linked_list_get_by_key(List list, size_t key);
+void *linked_list_get_by_index(List list, size_t index);

@@ -1,6 +1,7 @@
 #include <kernel/atomic.h>
 #include <kernel/debug.h>
 #include <kernel/kernel.h>
+#include <mm/kmalloc.h>
 #include <mm/maddrs.h>
 #include <mm/paging_helpers.h>
 #include <mm/pmm.h>
@@ -18,7 +19,7 @@ process_t *process_create(process_t *parent_proc, const char *process_name, bool
 	
 	atomic_begin();
 
-	proc = P2V(pmm_calloc());
+	proc = kmalloc(sizeof(process_t));
 	proc->pid = ++current_pid;
 
 	if(parent_proc) {
