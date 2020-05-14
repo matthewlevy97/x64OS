@@ -1,7 +1,6 @@
-#include <amd64/interrupt.h>
-#include <amd64/pic.h>
 #include <kernel/atomic.h>
 #include <kernel/debug.h>
+#include <kernel/timer.h>
 #include <mm/paging.h>
 #include <mm/paging_helpers.h>
 #include <process/scheduler.h>
@@ -19,8 +18,7 @@ void scheduler_init(process_t *process)
 
 	atomic_begin();
 
-	pic_write_mask(pic_get_mask() | PIC_INTERNAL_TIMER);
-	register_interrupt_handler(IRQ_TO_ISR(0), scheduler_preemptive);
+	timer_register_interrupt_callback(scheduler_run);
 
 	current_process_num = 0;
 	number_processes    = 0;
@@ -60,13 +58,4 @@ void scheduler_add_process(process_t *process)
 process_t *get_current_process()
 {
 	return current_process;
-}
-
-registers_t *scheduler_preemptive(registers_t *regs)
-{
-	pic_acknowledge(regs->int_no);
-
-	scheduler_run();
-
-	return regs;
 }
