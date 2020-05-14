@@ -5,12 +5,9 @@
 #include <mm/paging_helpers.h>
 #include <process/scheduler.h>
 #include <process/stack_switch.h>
+#include <utils/linked_list.h>
 
-static process_t *current_process;
-
-static uint64_t current_process_num;
-static uint64_t number_processes;
-static process_t *process_list[16];
+static List process_list;
 
 void scheduler_init(process_t *process)
 {
@@ -18,27 +15,27 @@ void scheduler_init(process_t *process)
 
 	atomic_begin();
 
-	timer_register_interrupt_callback(scheduler_run);
-
-	current_process_num = 0;
-	number_processes    = 0;
-
+	process_list = linked_list_create();
 	scheduler_add_process(process);
-	current_process = process;
-	
-	vmm_load_page_dir(current_process->page_directory);
 
-	stack_switch(&tmp, &(current_process->stack_pointer), current_process->page_directory);
+	timer_register_interrupt_callback(scheduler_run);
+	
+	vmm_load_page_dir(process->page_directory);
+
+	stack_switch(&tmp, &(process->stack_pointer), process->page_directory);
 }
 
 void scheduler_run()
 {
-	process_t *prev_process;
+	process_t *prev_process, *current_process;
 	
 	atomic_begin();
 	
-	prev_process = current_process;
-	current_process = process_list[++current_process_num % number_processes];
+	prev_process = get_current_process();
+
+	linked_list_rotate(process_list);
+	current_process = get_current_process();
+
 	if(prev_process == current_process) return;
 
 	// TODO: Set TSS
@@ -52,10 +49,10 @@ void scheduler_run()
 
 void scheduler_add_process(process_t *process)
 {
-	process_list[number_processes++] = process;
+	linked_list_insert(process_list, process->pid, process);
 }
 
 process_t *get_current_process()
 {
-	return current_process;
+	return (process_t*)linked_list_get_by_index(process_list, 0);
 }
