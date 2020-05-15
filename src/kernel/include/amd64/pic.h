@@ -5,7 +5,7 @@
  * 	https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/7-series-chipset-pch-datasheet.pdf
  */
 
-#include <amd64/interrupt.h>
+#include <amd64/interrupt/interrupt.h>
 #include <stdint.h>
 
 #define PIC_GET_COMMAND(x)             (x)

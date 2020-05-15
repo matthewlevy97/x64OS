@@ -42,6 +42,9 @@ void kmain(uint64_t multiboot_magic, void *multiboot_data)
 	acpi_init();
 	debug_ok("ACPI Initialized\n");
 
+	// atomic_begin() "called" in boot.S
+	atomic_end();
+
 	// Must not be in an atomic state at this point
 	ASSERT(!is_atomic());
 

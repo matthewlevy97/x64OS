@@ -1,5 +1,5 @@
-#include <amd64/interrupt.h>
-#include <amd64/interrupt_handlers.h>
+#include <amd64/interrupt/interrupt.h>
+#include <amd64/interrupt/interrupt_handlers.h>
 #include <kernel/debug.h>
 
 registers_t *general_protection_fault(registers_t *regs)

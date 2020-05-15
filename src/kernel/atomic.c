@@ -1,7 +1,10 @@
-#include <amd64/interrupt.h>
+#include <amd64/interrupt/interrupt.h>
 #include <kernel/atomic.h>
 
-static uint64_t atomic_depth = 0;
+/**
+ * boot.S disables interrupts immediatly, need to factor that in
+ */
+static uint64_t atomic_depth = 1;
 
 bool is_atomic()
 {

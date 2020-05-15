@@ -1,3 +1,4 @@
+#include <amd64/asm/segment.h>
 #include <mm/paging.h>
 
 .intel_syntax noprefix
@@ -8,6 +9,7 @@
 
 // External Functions
 .extern kmain
+.extern gdt_page
 
 // Exported Functions
 .global _start
@@ -82,15 +84,19 @@ upper_memory:
 	mov rax, cr3
 	mov cr3, rax
 
+	// TODO: Get GS_BASE from MSR
+
 	// Reload GDT
 	movabs rax, offset boot_gdt_ptr
 	lgdt [rax]
 
 	// Clear out selectors
 	xor rax, rax
-	mov ss, rax
-	mov ds, rax
-	mov es, rax
+	mov ss, ax
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 
 	// Reload CS
 	movabs rax, offset .reload_cs
@@ -98,6 +104,7 @@ upper_memory:
 	push rax
 	retfq
 .reload_cs:
+	// TODO: Restore GS_BASE
 
 	// Jump to C-land
 	movabs rax, offset kmain
@@ -111,7 +118,7 @@ upper_memory:
 boot_gdt:
 	.long 0, 0, 0, (GDT_PRESENT | GDT_CODE | GDT_LONG)
 boot_gdt_ptr:
-	.short (4 * 4) - 1 // Size of GDT Table - 1
+	.short (2 * 8) - 1 // Size of GDT Table - 1
 	.quad offset boot_gdt
 
 .section .bss

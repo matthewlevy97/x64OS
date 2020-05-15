@@ -1,4 +1,5 @@
-#include <amd64/interrupt.h>
+#include <amd64/asm/segment.h>
+#include <amd64/interrupt/interrupt.h>
 #include <kernel/debug.h>
 #include <string.h>
 
@@ -32,7 +33,7 @@ void idt_init()
 	memset(idt_handlers, 0, sizeof(idt_handlers));
 
 	for(int i = 0; i < NUMBER_INTERRUPTS; i++) {
-		set_interrupt_gate(i, isr_table[i], 0x8, 0, IDT_PRESENT | IDT_DPL0 | IDT_INTERRUPT_GATE);
+		set_interrupt_gate(i, isr_table[i], __KERNEL_CS, 0, IDT_PRESENT | IDT_DPL0 | IDT_INTERRUPT_GATE);
 	}
 
 	idtr.size = sizeof(idt) - 1;
@@ -63,7 +64,7 @@ static void set_interrupt_gate(uint32_t num, uintptr_t isr, uint16_t cs, uint8_t
 {
 	idt[num].offset_low    = isr         & 0xFFFF;
 	idt[num].offset_middle = (isr >> 16) & 0xFFFF;
-	idt[num].offset_high   = (isr >> 32) & 0xFFFFFFFF;
+	idt[num].offset_high   = (isr >> 32) & 0xFFFFFFFFULL;
 	idt[num].cs            = cs;
 	idt[num].ist           = ist;
 	idt[num].flags         = flags;
