@@ -14,6 +14,11 @@ extern uint64_t boot_p4[];
 static void load_and_map_physical_pages(uintptr_t base, uint32_t length);
 static void load_physical_pages(uintptr_t base, uint32_t length);
 
+/**
+ * TODO: Make all pages free, set kernel pages, modules, etc. to unfree immediatly
+ * NOTE: Above TODO's must be complete before kmalloc_init()
+ */
+
 int mm_init()
 {
 	multiboot2_mm_entry_tag_t *entries;

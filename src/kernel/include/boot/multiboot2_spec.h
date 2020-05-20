@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 enum multiboot2_tag_type {
+	MBOOT2_MODULE = 3,
 	MBOOT2_MM     = 6,
 	MBOOT2_ACPI   = 14,
 	MBOOT2_ACPIv2 = 15,
@@ -46,3 +47,13 @@ typedef struct {
 	multiboot2_header_tag_t header;
 	uint32_t rsdp;
 } multiboot2_rsdp_header_tag_t;
+
+/**
+ * Module Structures
+ */
+typedef struct {
+	multiboot2_header_tag_t header;
+	uint32_t mod_start;
+	uint32_t mod_end;
+	char     cmdline[];
+} multiboot2_module_tag_t;

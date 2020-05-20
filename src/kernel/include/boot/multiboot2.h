@@ -16,7 +16,9 @@
 #define MULTIBOOT2_MAGIC               0x36D76289 // Reply
 
 int multiboot2_init(uint64_t magic, void *data);
+
 multiboot2_header_tag_t *multiboot2_get_tag(enum multiboot2_tag_type type);
+multiboot2_header_tag_t *multiboot2_get_next_tag(void *current, enum multiboot2_tag_type type);
 
 void multiboot2_get_mm_entries(multiboot2_header_tag_t *tag, multiboot2_mm_entry_tag_t **entries, uint32_t *number_entries);
 

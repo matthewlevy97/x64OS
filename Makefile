@@ -59,9 +59,9 @@ KERNEL_COMPILE_FLAGS:= \
 	KERNEL_LDFLAGS="$(KERNEL_LDFLAGS)" \
 	KERNEL_ASFLAGS="$(KERNEL_ASFLAGS)"
 
-.PHONY: all sysroot clean mkiso kernel
+.PHONY: all sysroot clean mkiso kernel libc ramdisk
 
-all: sysroot libc kernel
+all: sysroot libc kernel ramdisk
 
 sysroot:
 	mkdir -p $(SYSROOT)
@@ -73,6 +73,14 @@ libc:
 # Build the kernel
 kernel:
 	$(MAKE) -C src/kernel install $(KERNEL_COMPILE_FLAGS)
+
+ramdisk:
+	mkdir -p $(SYSROOT)/ramdisk/
+	
+	# Setup a dummy / temporary ramdisk with some content
+	echo 'test' > /$(SYSROOT)/ramdisk/test.txt
+	
+	tar cvf $(SYSROOT)/boot/initrd.img $(SYSROOT)/ramdisk/
 
 mkiso: all
 

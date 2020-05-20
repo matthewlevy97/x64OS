@@ -1,24 +1,30 @@
 #include <boot/multiboot2.h>
 #include <kernel/kernel.h>
-#include <string.h>
+
+static multiboot2_header_tag_t *mboot2_address;
 
 int multiboot2_init(uint64_t magic, void *data)
 {
 	if(magic != MULTIBOOT2_MAGIC)
 		return 0;
-
-	// Relocate MBoot data to 0xFFFFFF8000000000
-	memcpy((void*)MULTIBOOT2_RELOCATION_ADDRESS, data, *(uint32_t*)data);
+	
+	mboot2_address = (multiboot2_header_tag_t*)data;
 
 	return 1;
 }
 
 multiboot2_header_tag_t *multiboot2_get_tag(enum multiboot2_tag_type type)
 {
-	multiboot2_header_tag_t *header;
+	return multiboot2_get_next_tag(NULL, type);
+}
+
+multiboot2_header_tag_t *multiboot2_get_next_tag(void *current, enum multiboot2_tag_type type)
+{
+	multiboot2_header_tag_t *header, *current_tag;
 	uint32_t total_length;
 	
-	header = (multiboot2_header_tag_t*)MULTIBOOT2_RELOCATION_ADDRESS;
+	header      = mboot2_address;
+	current_tag = (multiboot2_header_tag_t*)current;
 
 	/**
 	 * The first tag has the following struct
@@ -34,7 +40,12 @@ multiboot2_header_tag_t *multiboot2_get_tag(enum multiboot2_tag_type type)
 
 	header = incptr(header, sizeof(header));
 	while(total_length && header->type) {
-		if(header->type == type)
+		if(header == current_tag) {
+			current_tag = NULL;
+			continue;
+		}
+
+		if(!current_tag && header->type == type)
 			goto return_tag;
 
 		total_length -= ALIGN_8(header->size);

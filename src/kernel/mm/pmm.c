@@ -1,11 +1,9 @@
 #include <mm/pmm.h>
 #include <mm/paging.h>
 #include <string.h>
-#include <kernel/debug.h>
+
 /**
- * This is a dirty simple Physical Memory Manager.
- * I will eventually create a more efficent one than a linked-list
- * It is initialized by free'ing the first block
+ * TODO: Move to bitmap for tracking physical pages
  */
 
 static pmm_block_t *tail = NULL;
