@@ -80,15 +80,25 @@ init_failed:
 
 static void protect_kernel()
 {
+	multiboot2_module_tag_t *module_tag;
 	uintptr_t kstart, kend, mboot_base_addr;
 	uint32_t mboot_length;
 
+	// Kernel code
 	kstart = ALIGN(V2P((uintptr_t)&_kernel_start), PAGE_SIZE);
 	kend   = ALIGN(V2P((uintptr_t)&_kernel_end), PAGE_SIZE);
 	pmm_alloc_region(V2P(kstart), V2P(kend - kstart));
 
+	// Multiboot2 data
 	multiboot2_information(&mboot_base_addr, &mboot_length);
 	pmm_alloc_region(V2P(mboot_base_addr), V2P(mboot_length));
+
+	// Module code/data
+	module_tag = (multiboot2_module_tag_t*)multiboot2_get_tag(MBOOT2_MODULE);
+	while(module_tag) {
+		pmm_alloc_region(module_tag->mod_start, module_tag->mod_end - module_tag->mod_start);
+		module_tag = (multiboot2_module_tag_t*)multiboot2_get_next_tag(module_tag, MBOOT2_MODULE);
+	}
 }
 
 static inline void map_physical_to_virtual(uintptr_t start, uintptr_t end)

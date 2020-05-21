@@ -41,13 +41,12 @@ multiboot2_header_tag_t *multiboot2_get_next_tag(void *current, enum multiboot2_
 
 	header = incptr(header, sizeof(header));
 	while(total_length && header->type) {
-		if(header == current_tag) {
-			current_tag = NULL;
-			continue;
-		}
-
 		if(!current_tag && header->type == type)
 			goto return_tag;
+
+		if(header == current_tag) {
+			current_tag = NULL;
+		}
 
 		total_length -= ALIGN_8(header->size);
 		header = incptr(header, ALIGN_8(header->size));
