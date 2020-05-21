@@ -3,7 +3,6 @@ Kernel Memory Map:
 0x0000000000000000 - 0x00007FFFFFFFFFFF		User Space
 0xFFFFFF8000000000 - 0xFFFFFFFFFFFFFFFF		Kernel Space
 
-0xFFFFFF8000000000 - 0xFFFFFF8000010000		Multiboot / ACPI / system specific memory
 0xFFFFFF8000100000 - 0xFFFFFF8FFFFFFFFF		Kernel.bin / physical memory mapped into here
 
 0xFFFFFF9000000000 - 0xFFFFFF9001FFFFFF		Kernel stack          (32 MiB)   -------|
