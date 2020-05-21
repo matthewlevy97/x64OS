@@ -22,4 +22,6 @@ multiboot2_header_tag_t *multiboot2_get_next_tag(void *current, enum multiboot2_
 
 void multiboot2_get_mm_entries(multiboot2_header_tag_t *tag, multiboot2_mm_entry_tag_t **entries, uint32_t *number_entries);
 
+void multiboot2_information(uintptr_t *base_address, uint32_t *length);
+
 #endif

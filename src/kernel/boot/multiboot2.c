@@ -1,5 +1,6 @@
 #include <boot/multiboot2.h>
 #include <kernel/kernel.h>
+#include <kernel/debug.h>
 
 static multiboot2_header_tag_t *mboot2_address;
 
@@ -72,4 +73,10 @@ void multiboot2_get_mm_entries(multiboot2_header_tag_t *tag, multiboot2_mm_entry
 
 	*entries = header->entries;
 	*number_entries = (header->header.size - sizeof(*header)) / header->entry_size;
+}
+
+void multiboot2_information(uintptr_t *base_address, uint32_t *length)
+{
+	*base_address = (uintptr_t)mboot2_address;
+	*length = *(uint32_t*)mboot2_address;
 }
