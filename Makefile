@@ -75,12 +75,11 @@ kernel:
 	$(MAKE) -C src/kernel install $(KERNEL_COMPILE_FLAGS)
 
 ramdisk:
-	mkdir -p $(SYSROOT)/ramdisk/
+	@mkdir -p $(SYSROOT)/ramdisk/
 	
-	# Setup a dummy / temporary ramdisk with some content
-	echo 'test' > /$(SYSROOT)/ramdisk/test.txt
-	
-	tar cvf $(SYSROOT)/boot/initrd.img $(SYSROOT)/ramdisk/
+	@echo "Adding files to initrd.img:"
+	@tar cvf $(SYSROOT)/boot/initrd.img -C $(SYSROOT)/ramdisk/ .
+	@rm -rf $(SYSROOT)/ramdisk/
 
 mkiso: all
 

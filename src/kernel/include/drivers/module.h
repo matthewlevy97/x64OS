@@ -1,8 +1,10 @@
 #pragma once
 
-// TODO: Placeholder for module information
+#include <stdint.h>
+
 typedef struct {
-	void *ptr;
+	void    *base_addr;
+	uint64_t size;
 } module_t;
 
-module_t *module_load(const char *filename);
+uint64_t module_load(module_t *module, const char *filename);

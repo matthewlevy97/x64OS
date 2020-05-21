@@ -1,4 +1,5 @@
 #include <fs/vfs.h>
+#include <kernel/debug.h>
 
 static filesystem_t *root_fs;
 
@@ -14,11 +15,15 @@ void vfs_init(filesystem_t *fs)
 void vfs_change_rootfs(filesystem_t *fs)
 {
 	if(root_fs) {
-		root_fs->destroy();
+		if(!(root_fs->destroy())) {
+			PANIC("Failed to destroy current filesystem\n");
+		}
 	}
 
 	root_fs = fs;
-	root_fs->init();
+	if(!(root_fs->init())) {
+		PANIC("Failed to initialize new filesystem\n");
+	}
 }
 
 file_t vfs_open(const char *filename, struct vfs_file_info *info)

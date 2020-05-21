@@ -4,21 +4,27 @@
 #include <mm/paging.h>
 #include <string.h>
 
-module_t *module_load(const char *filename)
+uint64_t module_load(module_t *module, const char *filename)
 {
-	multiboot2_module_tag_t *initrd_tag;
+	multiboot2_module_tag_t *module_tag;
 
-	initrd_tag = (multiboot2_module_tag_t*)multiboot2_get_tag(MBOOT2_MODULE);
-	while(initrd_tag) {
-		if(!strncmp(filename, initrd_tag->cmdline, strlen(filename))) {
-			debug_info("Module Found: 0x%x:0x%x\n", initrd_tag->mod_start, initrd_tag->mod_end);
+	if(!module) {
+		debug_warning("module.c::module_load(NULL, \"%s\")", filename);
+		return 0;
+	}
+
+	module->size = 0;
+
+	module_tag = (multiboot2_module_tag_t*)multiboot2_get_tag(MBOOT2_MODULE);
+	while(module_tag) {
+		if(!strncmp(filename, module_tag->cmdline, strlen(filename))) {
+			module->base_addr = (void*)P2V(module_tag->mod_start);
+			module->size      = (module_tag->mod_end - module_tag->mod_start);
 			break;
 		}
 
-		initrd_tag = (multiboot2_module_tag_t*)multiboot2_get_next_tag(initrd_tag, MBOOT2_MODULE);
+		module_tag = (multiboot2_module_tag_t*)multiboot2_get_next_tag(module_tag, MBOOT2_MODULE);
 	}
 
-	// TODO: Create module_t and return data
-
-	return NULL;
+	return module->size;
 }

@@ -4,8 +4,8 @@
 
 extern filesystem_t initrd_fs;
 
-void initrd_init();
-void initrd_destroy();
+int initrd_init();
+int initrd_destroy();
 
 file_t initrd_open(const char *filename, struct vfs_file_info *info);
 void initrd_close(file_t file);

@@ -13,15 +13,20 @@ struct vfs_file_info {
 	uint32_t flags;
 };
 
-typedef struct {
+struct __vfs_file {
+	FileType type;
 	uint64_t refcount;
+	uint64_t inode_number;
+	
+	off_t current_offset;
 	
 	struct vfs_file_info info;
-} * file_t;
+};
+typedef struct __vfs_file * file_t;
 
-typedef struct {
-	void (*init)();
-	void (*destroy)();
+struct __vfs_filesystem {
+	int (*init)();
+	int (*destroy)();
 	
 	file_t (*open)(const char *filename, struct vfs_file_info *info);
 	void (*close)(file_t file);
@@ -30,7 +35,8 @@ typedef struct {
 	
 	ssize_t (*write)(file_t file, const void *buf, size_t nbyte);
 	ssize_t (*pwrite)(file_t file, const void *buf, size_t nbyte, off_t offset);
-} filesystem_t;
+};
+typedef struct __vfs_filesystem filesystem_t;
 
 void vfs_init(filesystem_t *fs);
 void vfs_change_rootfs(filesystem_t *fs);
