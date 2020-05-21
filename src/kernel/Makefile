@@ -12,6 +12,7 @@ include boot/make.config
 include acpi/make.config
 include amd64/make.config
 include drivers/make.config
+include fs/make.config
 include io/make.config
 include make.config
 include mm/make.config

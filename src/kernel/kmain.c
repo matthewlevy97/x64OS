@@ -2,6 +2,8 @@
 #include <amd64/cpu.h>
 #include <assert.h>
 #include <boot/multiboot2.h>
+#include <fs/initrd/initrd.h>
+#include <fs/vfs.h>
 #include <io/serial.h>
 #include <kernel/atomic.h>
 #include <kernel/debug.h>
@@ -12,7 +14,6 @@
 #include <mm/pmm.h>
 #include <process/process.h>
 #include <process/scheduler.h>
-#include <stdint.h>
 
 void stage_2()
 {
@@ -36,6 +37,8 @@ void kmain(uint64_t multiboot_magic, void *multiboot_data)
 
 	cpu_init();
 	debug_ok("CPU Initialized\n");
+
+	vfs_init(&initrd_fs);
 
 	timer_init();
 
