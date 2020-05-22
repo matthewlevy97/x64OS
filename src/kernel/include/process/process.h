@@ -9,6 +9,7 @@
 typedef enum {
 	PROCESS_RUNNING,
 	PROCESS_IDLE,
+	PROCESS_SLEEP,
 } PROCESS_STATE;
 
 typedef struct {
