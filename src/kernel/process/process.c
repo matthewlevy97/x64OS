@@ -21,11 +21,17 @@ process_t *process_create(process_t *parent_proc, const char *process_name, bool
 
 	proc = kmalloc(sizeof(process_t));
 	proc->pid = ++current_pid;
-
+	
 	if(parent_proc) {
 		proc->ppid = parent_proc->pid;
+
+		proc->sibling            = parent_proc->first_child;
+		parent_proc->first_child = proc;
 	} else {
 		proc->ppid = 0;
+
+		proc->first_child = NULL;
+		proc->sibling     = NULL;
 	}
 
 	strncpy(proc->name, process_name, sizeof(proc->name));
