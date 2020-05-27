@@ -5,6 +5,7 @@
 #include <process/process.h>
 #include <string.h>
 
+static page_directory_t base_p4 = NULL;
 static page_directory_t current_p4;
 
 static inline uint64_t *get_p1(uintptr_t virtual_address, page_directory_t p4);
@@ -21,23 +22,26 @@ page_directory_t vmm_get_page_dir()
 void vmm_load_page_dir(page_directory_t page_dir)
 {
 	current_p4 = (page_directory_t)V2P(page_dir);
+
+	if(!base_p4)
+		base_p4 = current_p4;
 }
 
 page_directory_t vmm_create_page_dir()
 {
-	page_directory_t page_dir, p3, current_p3;
-	uint32_t current_p3_flags;
+	page_directory_t page_dir, p3, base_p3;
+	uint32_t base_p3_flags;
 
 	// Clone kernel space
 	page_dir = (page_directory_t)P2V(pmm_calloc());
 	p3       = (page_directory_t)pmm_calloc();
 
-	current_p3 = (page_directory_t)((page_directory_t)P2V(current_p4))[511];
+	base_p3 = (page_directory_t)((page_directory_t)P2V(base_p4))[511];
 
-	memcpy((void*)P2V(p3), (void*)PAGING_GET_PTR_ADDRESS(P2V(current_p3)), PAGE_SIZE);
+	memcpy((void*)P2V(p3), (void*)PAGING_GET_PTR_ADDRESS(P2V(base_p3)), PAGE_SIZE);
 
-	current_p3_flags = (((uintptr_t)current_p3) & 0xFF);
-	page_dir[511] = ((uintptr_t)p3 | current_p3_flags);
+	base_p3_flags = (((uintptr_t)base_p3) & 0xFF);
+	page_dir[511] = ((uintptr_t)p3 | base_p3_flags);
 
 	return (page_directory_t)V2P(page_dir);
 }
@@ -61,7 +65,7 @@ void vmm_map_page(uintptr_t physical_address, uintptr_t virtual_address)
 	*p1 = physical_address | PAGE_PRESENT | PAGE_WRITE;	
 }
 
-void vmm_map_page2(uintptr_t physical_address, uintptr_t virtual_address, uint16_t flags)
+void vmm_map_page2(uintptr_t physical_address, uintptr_t virtual_address, uint64_t flags)
 {
 	uint64_t *p1;
 
@@ -69,7 +73,7 @@ void vmm_map_page2(uintptr_t physical_address, uintptr_t virtual_address, uint16
 	*p1 = physical_address | flags;	
 }
 
-void vmm_map_page3(page_directory_t page_dir, uintptr_t physical_address, uintptr_t virtual_address, uint16_t flags)
+void vmm_map_page3(page_directory_t page_dir, uintptr_t physical_address, uintptr_t virtual_address, uint64_t flags)
 {
 	uint64_t *p1;
 
@@ -77,7 +81,7 @@ void vmm_map_page3(page_directory_t page_dir, uintptr_t physical_address, uintpt
 	*p1 = physical_address | flags;	
 }
 
-void vmm_set_page_flags(uintptr_t virtual_address, uint16_t flags)
+void vmm_set_page_flags(uintptr_t virtual_address, uint64_t flags)
 {
 	uint64_t *p1;
 

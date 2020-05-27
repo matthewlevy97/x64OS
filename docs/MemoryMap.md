@@ -10,3 +10,4 @@ Kernel Memory Map:
 0xFFFFFF9004000000 - 0xFFFFFF903FFFFFFF		Kernel Process local information -------|
 
 0xFFFFFFA000000000 - 0xFFFFFFAFFFFFFFFF		Kernel global heap    (64 GiB)
+

@@ -1,6 +1,7 @@
 #include <amd64/asm/segment.h>
 #include <amd64/asm/tss.h>
 #include <amd64/cpu.h>
+#include <assert.h>
 #include <string.h>
 
 void tss_init()
@@ -14,10 +15,14 @@ void tss_init()
 	tss_install();
 }
 
-void tss_set_rsp0(void *rsp0)
+void tss_set_rsp(uint8_t index, void *rsp)
 {
 	struct tss_data *tss;
 
+	// TODO: Make this value dynamic
+	// Ensure that the index is a possible rspX value in the TSS
+	ASSERT(index < 3);
+
 	tss = &(cpu_get()->tss);
-	tss->rsp[0] = (uint64_t)rsp0;
+	tss->rsp[index] = (uint64_t)rsp;
 }

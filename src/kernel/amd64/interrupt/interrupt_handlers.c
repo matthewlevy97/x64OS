@@ -4,7 +4,7 @@
 
 registers_t *general_protection_fault(registers_t *regs)
 {
-	PANIC("Protection Fault @ 0x%x\n", regs->rip);
+	PANIC("General Protection Fault @ 0x%x [0x%x]\n", regs->rip, regs->err_code);
 	return regs;
 }
 

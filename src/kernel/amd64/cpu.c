@@ -1,4 +1,5 @@
 #include <amd64/asm/gdt.h>
+#include <amd64/asm/msr.h>
 #include <amd64/asm/tss.h>
 #include <amd64/common.h>
 #include <amd64/cpu.h>
@@ -49,6 +50,12 @@ void cpu_init()
 	register_interrupt_handler(0xD, general_protection_fault);
 	register_interrupt_handler(0xE, page_fault_handler);
 	
+	// TODO: Want to change the GS.Base to a better structure later on. Any changes will need to be reflected in context_switch.S "gs" offsets
+
+	// Set GS.Base
+	wrmsrl(MSR_GSBASE, (uint64_t)&(cpu_data.tss));
+	wrmsrl(MSR_KERNEL_GSBASE, (uint64_t)&(cpu_data.tss));
+
 	atomic_end();
 }
 

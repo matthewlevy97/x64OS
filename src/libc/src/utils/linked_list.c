@@ -28,7 +28,8 @@ List linked_list_rotate(List list)
 	if(!list) return NULL;
 	if(!(list->head)) return list;
 
-	list->head = list->head->next;
+	if(list->length > 1)
+		list->head = list->head->next;
 
 	return list;
 }

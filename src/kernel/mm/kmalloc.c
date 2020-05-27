@@ -33,7 +33,7 @@ void kmalloc_init(uintptr_t base_address)
 
 	heap_base_address = (uint8_t*)buddy_nodes;
 	for(size_t i = 0; i < buddy_size_paged / PAGE_SIZE; i++) {
-		vmm_map_page(pmm_calloc(), (uintptr_t)heap_base_address);
+		vmm_map_page2(pmm_calloc(), (uintptr_t)heap_base_address, PAGE_PRESENT | PAGE_WRITE | PAGE_NX);
 		heap_base_address += PAGE_SIZE;
 	}
 	heap_top_address = heap_base_address + HEAP_MAX_SIZE;

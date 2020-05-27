@@ -5,6 +5,9 @@
 
 #define PROCESS_NAME_LENGTH 128
 
+// TODO: Set initial RFLAGS for process
+#define PROCESS_INITIAL_RFLAGS 0
+
 typedef enum {
 	PROCESS_RUNNING,
 	PROCESS_IDLE,
@@ -19,6 +22,8 @@ struct __process {
 	PROCESS_STATE state;
 	int exit_value;
 	
+	uint64_t atomic_depth;
+	
 	/**
 	 * Linked list for faster accessing of child/sibling processes
 	 */
@@ -30,8 +35,8 @@ struct __process {
 	void (*entry_point)(void);
 	
 	uint64_t tid, next_tid;
-	void *stack_pointer;
-	void *tss_stack_pointer;
+	uintptr_t stack_pointer;
+	uintptr_t kernel_stack_pointer;
 };
 typedef struct __process process_t;
 

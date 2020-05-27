@@ -32,9 +32,9 @@ isr_common:
 	mov rax, cr0
 	push rax
 
+	cld
 	mov rdi, rsp
 	call interrupt_handler
-.isr_return:
 	mov rsp, rax
 
 	// Clear CRX values

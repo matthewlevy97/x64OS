@@ -13,6 +13,3 @@ void scheduler_run();
 void scheduler_add_process(process_t *process);
 
 process_t *get_current_process();
-
-process_t *get_active_process();
-void set_active_process(process_t *process);

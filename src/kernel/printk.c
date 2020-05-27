@@ -1,7 +1,7 @@
 #include <io/serial.h>
 #include <kernel/printk.h>
-#include <stddef.h>
 #include <stdarg.h>
+#include <stddef.h>
 
 static int putstr(char *s);
 static void putchar(char c);
@@ -12,7 +12,7 @@ int printk(const char *format, ...)
 	char buf[32];
 	char *ptr;
 	int bytes_written;
-	
+
 	va_list arg;
 	va_start(arg, format);
 	

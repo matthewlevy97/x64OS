@@ -1,3 +1,4 @@
+#include <amd64/asm/msr.h>
 #include <amd64/asm/segment.h>
 #include <mm/paging.h>
 
@@ -39,9 +40,9 @@ _start:
 	mov cr3, eax
 
 	// Enable Long mode
-	mov ecx, 0x0C0000080
+	mov ecx, MSR_EFER
 	rdmsr
-	or eax, (1 << 8)
+	or eax, (EFER_SCE | EFER_LME | EFER_NXENABLE)
 	wrmsr
 
 	// Enable paging
@@ -84,8 +85,6 @@ upper_memory:
 	mov rax, cr3
 	mov cr3, rax
 
-	// TODO: Get GS_BASE from MSR
-
 	// Reload GDT
 	movabs rax, offset boot_gdt_ptr
 	lgdt [rax]
@@ -104,8 +103,6 @@ upper_memory:
 	push rax
 	retfq
 .reload_cs:
-	// TODO: Restore GS_BASE
-
 	// Jump to C-land
 	movabs rax, offset kmain
 	call rax

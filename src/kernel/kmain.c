@@ -24,6 +24,9 @@ void stage_2()
 
 void kmain(uint64_t multiboot_magic, void *multiboot_data)
 {
+	/* boot.S disables interrupts, just need to propogate that value to the atomic counter */
+	atomic_set_counter(1);
+
 	serial_init();
 	
 	if(!multiboot2_init(multiboot_magic, multiboot_data))
