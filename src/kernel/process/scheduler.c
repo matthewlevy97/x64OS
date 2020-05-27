@@ -12,7 +12,7 @@ static List running_list;
 
 static uint64_t time_slice_remaining;
 
-void scheduler_init(process_t *process)
+void scheduler_init(process_t process)
 {
 	uint64_t tmp;
 
@@ -26,6 +26,9 @@ void scheduler_init(process_t *process)
 
 	time_slice_remaining = SCHEDULER_TIME_SLICE_DURATION;
 	vmm_load_page_dir(process->page_directory);
+
+	tss_set_rsp(0, (void*)process->stack_pointer);
+	tss_set_rsp(1, (void*)process->kernel_stack_pointer);
 	
 	atomic_set_counter(process->atomic_depth);
 	do_context_switch(&tmp, process->stack_pointer, process->page_directory);
@@ -35,7 +38,7 @@ void scheduler_init(process_t *process)
 
 void scheduler_run()
 {
-	process_t *current_process, *next_process;
+	process_t current_process, next_process;
 
 	atomic_begin();
 
@@ -89,7 +92,7 @@ no_task_switch:
 	return;
 }
 
-void scheduler_add_process(process_t *process)
+void scheduler_add_process(process_t process)
 {
 	atomic_begin();
 
@@ -98,7 +101,7 @@ void scheduler_add_process(process_t *process)
 	atomic_end();
 }
 
-process_t *get_current_process()
+process_t get_current_process()
 {
 	return linked_list_get_by_index(running_list, 0);
 }

@@ -20,6 +20,7 @@ void vfs_change_rootfs(filesystem_t *fs)
 		}
 	}
 
+	// TODO: Do validation checks to ensure all function pointers are valid
 	root_fs = fs;
 	if(!(root_fs->init())) {
 		PANIC("Failed to initialize new filesystem\n");
@@ -46,7 +47,7 @@ ssize_t vfs_write(file_t file, const void *buf, size_t nbyte)
 	return root_fs->write(file, buf, nbyte);
 }
 
-ssize_t vfs_pwrite(file_t file, const void *buf, size_t nbyte, off_t offset)
+off_t vfs_lseek(file_t file, off_t offset, SeekWhence whence)
 {
-	return root_fs->pwrite(file, buf, nbyte, offset);
+	return root_fs->lseek(file, offset, whence);
 }

@@ -8,7 +8,7 @@
 static page_directory_t base_p4 = NULL;
 static page_directory_t current_p4;
 
-static inline uint64_t *get_p1(uintptr_t virtual_address, page_directory_t p4);
+static inline uint64_t *get_p1(uintptr_t virtual_address, page_directory_t p4, uint64_t flags);
 static uint32_t get_p4_index(uintptr_t address);
 static uint32_t get_p3_index(uintptr_t address);
 static uint32_t get_p2_index(uintptr_t address);
@@ -61,7 +61,7 @@ void vmm_map_page(uintptr_t physical_address, uintptr_t virtual_address)
 {
 	uint64_t *p1;
 
-	p1 = get_p1(virtual_address, current_p4);
+	p1 = get_p1(virtual_address, current_p4, PAGE_PRESENT | PAGE_WRITE);
 	*p1 = physical_address | PAGE_PRESENT | PAGE_WRITE;	
 }
 
@@ -69,7 +69,7 @@ void vmm_map_page2(uintptr_t physical_address, uintptr_t virtual_address, uint64
 {
 	uint64_t *p1;
 
-	p1 = get_p1(virtual_address, current_p4);
+	p1 = get_p1(virtual_address, current_p4, flags);
 	*p1 = physical_address | flags;	
 }
 
@@ -77,7 +77,7 @@ void vmm_map_page3(page_directory_t page_dir, uintptr_t physical_address, uintpt
 {
 	uint64_t *p1;
 
-	p1 = get_p1(virtual_address, page_dir);
+	p1 = get_p1(virtual_address, page_dir, flags);
 	*p1 = physical_address | flags;	
 }
 
@@ -85,7 +85,7 @@ void vmm_set_page_flags(uintptr_t virtual_address, uint64_t flags)
 {
 	uint64_t *p1;
 
-	p1 = get_p1(virtual_address, current_p4);
+	p1 = get_p1(virtual_address, current_p4, flags);
 
 	// XXX: Should this just OR the flags, or should the flags be cleared and then OR'ed?
 	*p1 |= flags;	
@@ -211,24 +211,27 @@ void dump_memory(page_directory_t p4)
 	}
 }
 
-static inline uint64_t *get_p1(uintptr_t virtual_address, page_directory_t p4)
+static inline uint64_t *get_p1(uintptr_t virtual_address, page_directory_t p4, uint64_t flags)
 {
 	uint64_t *level;
 	level = P2V(p4);
 
 	if(!(level[get_p4_index(virtual_address)])) {
-		level[get_p4_index(virtual_address)] = pmm_calloc() | PAGE_PRESENT | PAGE_WRITE;
+		level[get_p4_index(virtual_address)] = pmm_calloc();
 	}
+	level[get_p4_index(virtual_address)] |= flags;
 	level = (uint64_t*)PAGING_GET_PTR_ADDRESS(P2V(level[get_p4_index(virtual_address)]));
 
 	if(!(level[get_p3_index(virtual_address)])) {
-		level[get_p3_index(virtual_address)] = pmm_calloc() | PAGE_PRESENT | PAGE_WRITE;
+		level[get_p3_index(virtual_address)] = pmm_calloc();
 	}
+	level[get_p3_index(virtual_address)] |= flags;
 	level = (uint64_t*)PAGING_GET_PTR_ADDRESS(P2V(level[get_p3_index(virtual_address)]));
 
 	if(!(level[get_p2_index(virtual_address)])) {
-		level[get_p2_index(virtual_address)] = pmm_calloc() | PAGE_PRESENT | PAGE_WRITE;
+		level[get_p2_index(virtual_address)] = pmm_calloc();
 	}
+	level[get_p2_index(virtual_address)] |= flags;
 	level = (uint64_t*)PAGING_GET_PTR_ADDRESS(P2V(level[get_p2_index(virtual_address)]));
 
 	return &(level[get_p1_index(virtual_address)]);

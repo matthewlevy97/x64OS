@@ -2,6 +2,8 @@
 
 #include <amd64/asm/segment.h>
 
+.extern elf_load
+
 .section .text
 
 /* Thanks to: https://github.com/IsaacWoods/pebble/blob/master/kernel/kernel_x86_64/src/task.s */
@@ -13,12 +15,14 @@
 
 .global process_entry_trampoline
 process_entry_trampoline:
+	call elf_load
+
 	/* Save kernel stack */
 	mov gs:0x4, rsp
 	mov rsp, gs:0xC
 	
 	/* Setup for sysret */
-	mov rcx, r15
+	mov rcx, [r15]
 	mov r11, r14
 
 	/* Clear registers not cleared on context switch */
@@ -36,13 +40,15 @@ process_entry_trampoline:
 
 .global driver_entry_trampoline
 driver_entry_trampoline:
+	call elf_load
+
 	/* Setup for iret */
 	mov rax, rsp
 	pushq __KERNEL_DS
 	push rax
 	push r14
 	pushq __KERNEL_CS
-	push r15
+	push [r15]
 
 	/* Clear registers not cleared on context switch */
 	xor r15, r15

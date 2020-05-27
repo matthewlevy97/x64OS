@@ -3,6 +3,12 @@
 #include <sys/types.h>
 
 typedef enum {
+	SEEK_SET,
+	SEEK_CUR,
+	SEEK_END
+} SeekWhence;
+
+typedef enum {
 	FILE_TYPE_UNKNOWN,
 	
 	FILE_TYPE_DIRECTORY,
@@ -32,9 +38,9 @@ struct __vfs_filesystem {
 	void (*close)(file_t file);
 	
 	ssize_t (*read)(file_t file, void *buf, size_t nbyte);
-	
 	ssize_t (*write)(file_t file, const void *buf, size_t nbyte);
-	ssize_t (*pwrite)(file_t file, const void *buf, size_t nbyte, off_t offset);
+	
+	off_t (*lseek)(file_t file, off_t offset, SeekWhence whence);
 };
 typedef struct __vfs_filesystem filesystem_t;
 
@@ -45,6 +51,6 @@ file_t vfs_open(const char *filename, struct vfs_file_info *info);
 void vfs_close(file_t file);
 
 ssize_t vfs_read(file_t file, void *buf, size_t nbyte);
-
 ssize_t vfs_write(file_t file, const void *buf, size_t nbuf);
-ssize_t vfs_pwrite(file_t file, const void *buf, size_t nbuf, off_t offset);
+
+off_t vfs_lseek(file_t file, off_t offset, SeekWhence whence);

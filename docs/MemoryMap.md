@@ -9,5 +9,6 @@ Kernel Memory Map:
 0xFFFFFF9002000000 - 0xFFFFFF9003FFFFFF		Kernel local heap     (32 MiB)          |--> Give entire P2 to storing process information (P4: 511, P3: 64)
 0xFFFFFF9004000000 - 0xFFFFFF903FFFFFFF		Kernel Process local information -------|
 
-0xFFFFFFA000000000 - 0xFFFFFFAFFFFFFFFF		Kernel global heap    (64 GiB)
+0xFFFFFFA000000000 - 0xFFFFFFAFFFFFFFFF		Driver Load           (64 GiB)
 
+0xFFFFFFB000000000 - 0xFFFFFFBFFFFFFFFF		Kernel global heap    (64 GiB)

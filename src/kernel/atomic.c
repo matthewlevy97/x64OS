@@ -1,8 +1,6 @@
 #include <amd64/interrupt/interrupt.h>
 #include <kernel/atomic.h>
 
-// TODO: Might want to move the atomic_depth counter inside the process_t structure
-
 static volatile uint64_t atomic_depth = 0;
 
 bool is_atomic()

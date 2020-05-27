@@ -38,8 +38,8 @@ struct __process {
 	uintptr_t stack_pointer;
 	uintptr_t kernel_stack_pointer;
 };
-typedef struct __process process_t;
+typedef struct __process* process_t;
 
-process_t *process_create(process_t *parent_proc, const char *process_name, bool user, void (*entry_point)(void));
+process_t process_create(process_t parent_proc, const char *path, bool kernel_mode);
 
-void dump_process(process_t *process);
+void dump_process(process_t process);

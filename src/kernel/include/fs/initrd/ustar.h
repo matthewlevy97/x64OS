@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <sys/types.h>
 
 #define USTAR_MAGIC "ustar"
 #define USTAR_MAGIC_LEN 5
@@ -34,4 +35,4 @@ struct ustar_header {           /* byte offset */
 uint64_t ustar_lookup(void *archive, const char *filename, uint64_t *inode_number);
 uint64_t ustar_filesize(void *archive, uint64_t inode_number);
 
-void *ustar_copy_data(void *archive, uint64_t inode_number, void *buf, uint64_t bytes);
+void *ustar_copy_data(void *archive, uint64_t inode_number, void *buf, uint64_t bytes, off_t offset);

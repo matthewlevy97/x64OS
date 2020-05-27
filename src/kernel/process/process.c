@@ -1,5 +1,6 @@
 #include <amd64/asm/context_switch.h>
 #include <amd64/asm/processor_flags.h>
+#include <drivers/elf.h>
 #include <kernel/atomic.h>
 #include <kernel/debug.h>
 #include <kernel/kernel.h>
@@ -11,15 +12,15 @@
 
 static uint64_t current_pid = 0;
 
-static void setup_stack(process_t *proc);
+static void setup_stack(process_t proc);
 
-process_t *process_create(process_t *parent_proc, const char *process_name, bool kernel_mode, void (*entry_point)(void))
+process_t process_create(process_t parent_proc, const char *path, bool kernel_mode)
 {
-	process_t *proc;
+	process_t proc;
 	
 	atomic_begin();
 
-	proc = kmalloc(sizeof(process_t));
+	proc = kmalloc(sizeof(struct __process));
 	proc->pid = ++current_pid;
 	
 	if(parent_proc) {
@@ -34,7 +35,7 @@ process_t *process_create(process_t *parent_proc, const char *process_name, bool
 		proc->sibling     = NULL;
 	}
 
-	strncpy(proc->name, process_name, sizeof(proc->name));
+	strncpy(proc->name, path, sizeof(proc->name));
 	proc->name[sizeof(proc->name) - 1] = '\0'; // Ensure NULL terminated
 
 	proc->kernel_mode = false;
@@ -49,8 +50,7 @@ process_t *process_create(process_t *parent_proc, const char *process_name, bool
 	proc->state = PROCESS_RUNNING;
 	proc->exit_value = 0;
 
-	// TODO: Set to correct context_switch entry point
-	proc->entry_point = entry_point;
+	proc->entry_point = 0;
 
 	proc->tid      = 1;
 	proc->next_tid = proc->tid + 1;
@@ -62,7 +62,7 @@ process_t *process_create(process_t *parent_proc, const char *process_name, bool
 	return proc;
 }
 
-void dump_process(process_t *process)
+void dump_process(process_t process)
 {
 	debug("---------------------\n");
 	debug("PID:         %d\n", process->pid);
@@ -75,6 +75,7 @@ void dump_process(process_t *process)
 	debug("Stack:       0x%x\n", process->stack_pointer);
 	debug("TSS Stack:   0x%x\n", process->kernel_stack_pointer);
 	debug("TID:         %d\n", process->tid);
+	debug("Page Dir:    0x%x\n", process->page_directory);
 
 	debug("Memory Map:\n");
 	dump_memory(process->page_directory);
@@ -85,13 +86,12 @@ void dump_process(process_t *process)
  * USERMODE:   do_context_switch() -> process_entry_trampoline() -> process
  * KERNELMODE: do_context_switch() -> driver_entry_trampoline() -> process
  */
-static void setup_stack(process_t *proc)
+static inline void setup_stack(process_t proc)
 {
 	struct stack_switch_registers *regs;
 	void *stack_base, *kernel_stack_base;
 	
 	proc->page_directory       = vmm_create_page_dir();
-	
 	proc->kernel_stack_pointer = (uintptr_t)KERNEL_STACK_START;
 	proc->stack_pointer        = (uintptr_t)USER_SPACE_STACK_START;
 
@@ -110,13 +110,13 @@ static void setup_stack(process_t *proc)
 		PAGE_NX | PAGE_WRITE | PAGE_PRESENT | (!proc->kernel_mode ? PAGE_USER : 0));
 
 	// Setup stack values
-	regs      = incptr(P2V(kernel_stack_base), PAGE_SIZE - sizeof(struct stack_switch_registers));
-	regs->r15 = (uint64_t)proc->entry_point;
-	regs->r14 = X86_EFLAGS_STANDARD;
-	regs->r13 = 0;
-	regs->r12 = 0;
-	regs->rbp = 0;
-	regs->ret = (uint64_t)(proc->kernel_mode ? driver_entry_trampoline : process_entry_trampoline);
+	regs       = incptr(P2V(kernel_stack_base), PAGE_SIZE - sizeof(struct stack_switch_registers));
+	regs->r15  = (uint64_t)&(proc->entry_point);
+	regs->r14  = X86_EFLAGS_STANDARD;
+	regs->r13  = 0;
+	regs->r12  = 0;
+	regs->rbp  = 0;
+	regs->ret  = (uintptr_t)(proc->kernel_mode ? driver_entry_trampoline : process_entry_trampoline);
 	proc->kernel_stack_pointer = (uint64_t)decptr(proc->kernel_stack_pointer, sizeof(struct stack_switch_registers));
 
 	/**

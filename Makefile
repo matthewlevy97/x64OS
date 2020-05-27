@@ -5,7 +5,7 @@ LD=$(TARGET)-ld
 AS=$(TARGET)-as
 AR=$(TARGET)-ar
 
-CFLAGS += -std=gnu11 -Wall -Wextra -pedantic
+CFLAGS += -std=c11 -Wall -Wextra -pedantic -ffreestanding -nostdlib
 CPPFLAGS += -Iinclude
 LDFLAGS +=
 ASFLAGS +=
@@ -22,7 +22,6 @@ CFLAGS += $(GITFLAGS)
 
 KERNEL_CFLAGS := $(CFLAGS)
 KERNEL_CFLAGS += --sysroot=$(SYSROOT) -isystem=/usr/include -mcmodel=large
-KERNEL_CFLAGS += -std=c11 -ffreestanding -nostdlib
 KERNEL_CFLAGS += -mno-red-zone -mno-mmx -mno-sse -mno-sse2
 KERNEL_CPPFLAGS := $(CPPFLAGS)
 KERNEL_LDFLAGS := $(LDFLAGS)
@@ -59,9 +58,9 @@ KERNEL_COMPILE_FLAGS:= \
 	KERNEL_LDFLAGS="$(KERNEL_LDFLAGS)" \
 	KERNEL_ASFLAGS="$(KERNEL_ASFLAGS)"
 
-.PHONY: all sysroot clean mkiso kernel libc ramdisk
+.PHONY: all sysroot clean mkiso kernel libc drivers apps ramdisk
 
-all: sysroot libc kernel ramdisk
+all: sysroot libc kernel drivers apps ramdisk
 
 sysroot:
 	mkdir -p $(SYSROOT)
@@ -74,9 +73,14 @@ libc:
 kernel:
 	$(MAKE) -C src/kernel install $(KERNEL_COMPILE_FLAGS)
 
+drivers:
+	$(MAKE) -C src/drivers install $(KERNEL_COMPILE_FLAGS)
+
+apps:
+	$(MAKE) -C src/apps install $(COMPILE_FLAGS)
+
 ramdisk:
 	@mkdir -p $(SYSROOT)/ramdisk/
-	
 	@echo "Adding files to initrd.img:"
 	@tar cvf $(SYSROOT)/boot/initrd.img -C $(SYSROOT)/ramdisk/ .
 	@rm -rf $(SYSROOT)/ramdisk/
@@ -86,5 +90,7 @@ mkiso: all
 clean:
 	$(MAKE) -C src/libc clean
 	$(MAKE) -C src/kernel clean
+	$(MAKE) -C src/apps clean
+	$(MAKE) -C src/drivers clean
 	rm -rf $(SYSROOT)
 	rm -rf $(ISO)

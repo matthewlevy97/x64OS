@@ -21,7 +21,7 @@ uint64_t ustar_lookup(void *archive, const char *filename, uint64_t *inode_numbe
         }
         ptr += (((filesize + (USTAR_SECTOR_SIZE - 1)) / USTAR_SECTOR_SIZE) + 1) * USTAR_SECTOR_SIZE;
     }
-
+    
     return 0;
 }
 
@@ -33,15 +33,15 @@ uint64_t ustar_filesize(void *archive, uint64_t inode_number)
     return oct2bin(ptr + 0x7c, 11);
 }
 
-void *ustar_copy_data(void *archive, uint64_t inode_number, void *buf, uint64_t bytes)
+void *ustar_copy_data(void *archive, uint64_t inode_number, void *buf, uint64_t bytes, off_t offset)
 {
     unsigned char *ptr;
 
-    ptr = (unsigned char*)archive + inode_number + USTAR_SECTOR_SIZE;
+    ptr = (unsigned char*)archive + inode_number + USTAR_SECTOR_SIZE + offset;
     return memcpy(buf, ptr, bytes);
 }
 
-static uint64_t oct2bin(unsigned char *str, int size) {
+static inline uint64_t oct2bin(unsigned char *str, int size) {
 	uint64_t ret;
 
 	ret = 0;
