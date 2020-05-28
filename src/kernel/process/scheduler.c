@@ -66,7 +66,6 @@ void scheduler_run()
 	/* Do */
 	vmm_load_page_dir(next_process->page_directory);
 
-	tss_set_rsp(0, (void*)next_process->stack_pointer);
 	tss_set_rsp(1, (void*)next_process->kernel_stack_pointer);
 
 	current_process->atomic_depth = atomic_counter();
@@ -75,11 +74,10 @@ void scheduler_run()
 	
 	/* Context Switch */
 	do_context_switch(&(current_process->stack_pointer), next_process->stack_pointer, next_process->page_directory);
-
+	
 	/* Undo */
 	atomic_set_counter(current_process->atomic_depth);
 
-	tss_set_rsp(0, (void*)current_process->stack_pointer);
 	tss_set_rsp(1, (void*)current_process->kernel_stack_pointer);
 
 	vmm_load_page_dir(current_process->page_directory);

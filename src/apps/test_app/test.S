@@ -4,7 +4,8 @@
 
 .section .text
 _start:
-	mov rdi, 5
+	mov rdi, 0
 	mov rsi, 3
 	syscall
+
 	jmp $

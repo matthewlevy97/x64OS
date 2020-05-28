@@ -40,6 +40,7 @@ struct __process {
 };
 typedef struct __process* process_t;
 
+process_t thread_create(process_t parent_proc, const char *name, bool kernel_mode, void (*entry_point)(void));
 process_t process_create(process_t parent_proc, const char *path, bool kernel_mode);
 
 void dump_process(process_t process);

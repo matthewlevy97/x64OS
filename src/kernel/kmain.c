@@ -15,6 +15,16 @@
 #include <process/process.h>
 #include <process/scheduler.h>
 
+void stage2()
+{
+	debug_ok("Stage 2 Loaded!\n");
+
+	scheduler_add_process(process_create(NULL, "./apps/test_app", false));
+
+	get_current_process()->state = PROCESS_IDLE;
+	while(1);
+}
+
 void kmain(uint64_t multiboot_magic, void *multiboot_data)
 {
 	/* boot.S disables interrupts, just need to propogate that value to the atomic counter */
@@ -47,10 +57,8 @@ void kmain(uint64_t multiboot_magic, void *multiboot_data)
 	// Must not be in an atomic state at this point
 	ASSERT(!is_atomic());
 
-	debug_ok("Kernel Loaded!\n");
-
-	process_t p = process_create(NULL, "./apps/test_app", false);
-	scheduler_init(p);
+	//scheduler_init(process_create(NULL, "./apps/test_app", false));
+	scheduler_init(thread_create(NULL, "stage2", true, stage2));
 
 	while(1);
 	return;

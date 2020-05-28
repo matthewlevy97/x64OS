@@ -15,8 +15,11 @@ struct stack_switch_registers
 };
 
 void process_entry_trampoline();
-void driver_entry_trampoline();
+void process_entry_trampoline_no_elf_load();
 
-void do_drop_to_usermode();
+void driver_entry_trampoline();
+void driver_entry_trampoline_no_elf_load();
+
+void entry_SYSCALL_64();
 
 void do_context_switch(uintptr_t *old_stack_ptr, uintptr_t new_stack_ptr, page_directory_t page_directory);

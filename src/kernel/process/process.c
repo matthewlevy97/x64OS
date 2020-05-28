@@ -1,6 +1,5 @@
 #include <amd64/asm/context_switch.h>
 #include <amd64/asm/processor_flags.h>
-#include <drivers/elf.h>
 #include <kernel/atomic.h>
 #include <kernel/debug.h>
 #include <kernel/kernel.h>
@@ -12,15 +11,53 @@
 
 static uint64_t current_pid = 0;
 
+static process_t general_create(process_t proc, process_t parent_proc, const char *path, bool kernel_mode);
 static void setup_stack(process_t proc);
+
+process_t thread_create(process_t parent_proc, const char *name, bool kernel_mode, void (*entry_point)(void))
+{
+	process_t proc;
+
+	atomic_begin();
+	
+	proc = kmalloc(sizeof(struct __process));
+
+	if(parent_proc) {
+		proc->tid = parent_proc->next_tid;
+		parent_proc->next_tid++;
+	} else {
+		proc->tid = 2;
+	}
+	proc->next_tid = proc->tid + 1;
+
+	proc = general_create(proc, parent_proc, name, kernel_mode);
+	proc->entry_point = entry_point;
+
+	atomic_end();
+
+	return proc;
+}
 
 process_t process_create(process_t parent_proc, const char *path, bool kernel_mode)
 {
 	process_t proc;
-	
-	atomic_begin();
 
+	atomic_begin();
+	
 	proc = kmalloc(sizeof(struct __process));
+
+	proc->tid      = 1;
+	proc->next_tid = proc->tid + 1;
+
+	proc = general_create(proc, parent_proc, path, kernel_mode);
+
+	atomic_end();
+
+	return proc;
+}
+
+static process_t general_create(process_t proc, process_t parent_proc, const char *path, bool kernel_mode)
+{
 	proc->pid = ++current_pid;
 	
 	if(parent_proc) {
@@ -52,12 +89,7 @@ process_t process_create(process_t parent_proc, const char *path, bool kernel_mo
 
 	proc->entry_point = 0;
 
-	proc->tid      = 1;
-	proc->next_tid = proc->tid + 1;
-
 	setup_stack(proc);
-
-	atomic_end();
 
 	return proc;
 }
@@ -65,17 +97,17 @@ process_t process_create(process_t parent_proc, const char *path, bool kernel_mo
 void dump_process(process_t process)
 {
 	debug("---------------------\n");
-	debug("PID:         %d\n", process->pid);
-	debug("PPID:        %d\n", process->ppid);
-	debug("Name:        \"%s\"\n", process->name);
-	debug("Kernel Mode: %d\n", process->kernel_mode);
-	debug("State:       %d\n", process->state);
-	debug("Exit Value:  %d\n", process->exit_value);
-	debug("Entry Point: 0x%x\n", process->entry_point);
-	debug("Stack:       0x%x\n", process->stack_pointer);
-	debug("TSS Stack:   0x%x\n", process->kernel_stack_pointer);
-	debug("TID:         %d\n", process->tid);
-	debug("Page Dir:    0x%x\n", process->page_directory);
+	debug("PID:          %d\n",     process->pid);
+	debug("PPID:         %d\n",     process->ppid);
+	debug("Name:         \"%s\"\n", process->name);
+	debug("Kernel Mode:  %d\n",     process->kernel_mode);
+	debug("State:        %d\n",     process->state);
+	debug("Exit Value:   %d\n",     process->exit_value);
+	debug("Entry Point:  0x%x\n",   process->entry_point);
+	debug("Stack:        0x%x\n",   process->stack_pointer);
+	debug("Kernel Stack: 0x%x\n",   process->kernel_stack_pointer);
+	debug("TID:          %d\n",     process->tid);
+	debug("Page Dir:     0x%x\n",   process->page_directory);
 
 	debug("Memory Map:\n");
 	dump_memory(process->page_directory);
@@ -116,7 +148,18 @@ static inline void setup_stack(process_t proc)
 	regs->r13  = 0;
 	regs->r12  = 0;
 	regs->rbp  = 0;
-	regs->ret  = (uintptr_t)(proc->kernel_mode ? driver_entry_trampoline : process_entry_trampoline);
+
+	// Threads don't need to load from an elf (Only load if first process thread)
+	if(proc->tid == 1) {
+		regs->ret = (uintptr_t)(proc->kernel_mode ?
+			driver_entry_trampoline :
+			process_entry_trampoline);
+	} else {
+		regs->ret = (uintptr_t)(proc->kernel_mode ?
+			driver_entry_trampoline_no_elf_load :
+			process_entry_trampoline_no_elf_load);
+	}
+
 	proc->kernel_stack_pointer = (uint64_t)decptr(proc->kernel_stack_pointer, sizeof(struct stack_switch_registers));
 
 	/**

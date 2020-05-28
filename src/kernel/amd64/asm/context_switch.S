@@ -1,6 +1,7 @@
 .intel_syntax noprefix
 
 #include <amd64/asm/segment.h>
+#include <process/syscall.h>
 
 .extern elf_load
 
@@ -14,9 +15,10 @@
 */
 
 .global process_entry_trampoline
+.global process_entry_trampoline_no_elf_load
 process_entry_trampoline:
 	call elf_load
-
+process_entry_trampoline_no_elf_load:
 	/* Save kernel stack */
 	mov gs:0x4, rsp
 	mov rsp, gs:0xC
@@ -39,9 +41,10 @@ process_entry_trampoline:
 	sysretq
 
 .global driver_entry_trampoline
+.global driver_entry_trampoline_no_elf_load
 driver_entry_trampoline:
 	call elf_load
-
+driver_entry_trampoline_no_elf_load:
 	/* Setup for iret */
 	mov rax, rsp
 	pushq __KERNEL_DS
@@ -65,33 +68,46 @@ driver_entry_trampoline:
 
 	iretq
 
-.global do_drop_to_usermode
-do_drop_to_usermode:
-	cli
+.extern syscall_table
+.global entry_SYSCALL_64
+entry_SYSCALL_64:
+	swapgs
 
 	/* Switch to kernel stack */
-	movq rsp, gs:0x4
+	mov gs:0xC, rsp
+	mov rsp, gs:0x4
 
-	pop rcx
-	pop r11
-	pop r13
-	pop r12
-	pop rbp
-	pop rbx
+	/* Save for SYSRET */
+	pushq rcx
+	pushq r11
 
-	/* Switch to process stack */
-	movq rsp, gs:0xC
+	/* Ensure valid SYSCALL */
+	cmp rdi, NUMBER_SYSCALLS
+	jae .syscall_done
 
-	xor rax, rax
-	xor rdx, rdx
-	xor rsi, rsi
-	xor rdi, rdi
-	xor r8, r8
-	xor r9, r9
-	xor r10, r10
-	xor r14, r14
-	xor r15, r15
+	/* 3rd argument stored in r10 because rcx used by SYSCALL/SYSRET */
+	mov rcx, r10
 
+	/* Call correct syscall handler */
+	movabs rax, offset syscall_table
+	shl rdi, 3
+	add rax, rdi
+	call [rax]
+.syscall_done:
+
+	/* Restore for SYSRET */
+	popq r11
+	popq rcx
+
+	// TODO: Do I need to clear registers here??
+
+	/* Restore original stack */
+	mov gs:0x4, rsp
+	mov rsp, gs:0xC
+
+	swapgs
+
+	/* Return to usermode */
 	sysretq
 
 .global do_context_switch
