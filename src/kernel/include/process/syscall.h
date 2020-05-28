@@ -1,6 +1,7 @@
 #pragma once
 
-#define NUMBER_SYSCALLS 1
+#define SYSCALL_YIELD      0
+#define SYSCALL_NUMBER     1
 
 #ifndef __ASSEMBLER__
 

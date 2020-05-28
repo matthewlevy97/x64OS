@@ -82,7 +82,7 @@ entry_SYSCALL_64:
 	pushq r11
 
 	/* Ensure valid SYSCALL */
-	cmp rdi, NUMBER_SYSCALLS
+	cmp rdi, SYSCALL_NUMBER
 	jae .syscall_done
 
 	/* 3rd argument stored in r10 because rcx used by SYSCALL/SYSRET */
