@@ -8,7 +8,7 @@
 Attempt at creating an OS for the AMD64 architecture. Best way to learn a system is to build something for it.
 
 ## Build
-Checkout BUILD.md for instructions on compiling the kernel
+Checkout [BUILD.md](BUILD.md) for instructions on compiling the kernel
 
 ## Roadmap
 Head on over to the *Project tab* to see current work being done
