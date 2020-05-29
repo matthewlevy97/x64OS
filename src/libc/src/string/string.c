@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <string.h>
 
 size_t strlen(const char *s)
@@ -75,41 +76,16 @@ char *strncpy(char *dest, const char *src, size_t n)
 	return dest;
 }
 
-void *memset(void *s, int c, size_t n)
+char *strdup(const char *s)
 {
+	size_t len;
 	char *ptr;
 
-	ptr = s;
-	while(n--) {
-		*ptr++ = c;
-	}
+	len = strlen(s);
+	ptr = malloc(len + 1);
 
-	return s;
-}
+	memcpy(ptr, s, len);
+	ptr[len] = '\0';
 
-void *memcpy(void *dest, const void *src, size_t n)
-{
-	char *d, *s;
-
-	d = dest;
-	s = (char*)src;
-	while(n--) {
-		*d++ = *s++;
-	}
-
-	return dest;
-}
-
-int memcmp(const void *s1, const void *s2, size_t n)
-{
-	unsigned char *ptr1, *ptr2, val;
-
-	ptr1 = (unsigned char*)s1;
-	ptr2 = (unsigned char*)s2;
-
-	do {
-		val = *ptr1++ - *ptr2++;
-	} while(!val && --n);
-
-	return val;
+	return ptr;
 }
