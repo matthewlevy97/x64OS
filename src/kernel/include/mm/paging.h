@@ -34,6 +34,7 @@
 
 #define PAGING_GET_PTR_ADDRESS(pt) ((uintptr_t)(pt) & (~(PAGE_SIZE - 1)))
 #define ALIGN_PAGE(x) ALIGN((x), PAGE_SIZE)
+#define ALIGN_PAGE_DOWN(x) ALIGN_DOWN((x), PAGE_SIZE)
 
 typedef uint64_t* page_directory_t;
 

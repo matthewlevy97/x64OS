@@ -89,9 +89,30 @@ static process_t general_create(process_t proc, process_t parent_proc, const cha
 
 	proc->entry_point = 0;
 
+	proc->files = kcalloc(PROCESS_MAX_FILE_DESCRIPTORS, sizeof(vfs_node_t));
+
 	setup_stack(proc);
 
 	return proc;
+}
+
+int32_t process_free_file_descriptor_index(process_t process)
+{
+	int32_t ret;
+
+	if(!process || !(process->files)) {
+		return -1;
+	}
+
+	ret  = 0;
+	while(ret < PROCESS_MAX_FILE_DESCRIPTORS && process->files[ret]) {
+		ret++;
+	}
+
+	if(ret >= PROCESS_MAX_FILE_DESCRIPTORS)
+		ret = -2;
+
+	return ret;
 }
 
 void dump_process(process_t process)
@@ -114,7 +135,7 @@ void dump_process(process_t process)
 	debug("---------------------\n");
 }
 
-/* TODO: Setup call stack for flow:
+/*
  * USERMODE:   do_context_switch() -> process_entry_trampoline() -> process
  * KERNELMODE: do_context_switch() -> driver_entry_trampoline() -> process
  */

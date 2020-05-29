@@ -4,8 +4,13 @@
 
 .section .text
 _start:
-	mov rdi, 0
-	mov rsi, 3
+	mov rdi, 1
+	lea rsi, filename
+	mov rdx, 0
 	syscall
 
 	jmp $
+
+.section .data
+filename:
+	.string "/dev/null\0"

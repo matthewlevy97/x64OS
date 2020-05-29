@@ -69,17 +69,17 @@ static void map_data(process_t process, vfs_node_t file, struct elf_phdr64 ph)
 	if(ph.p_flags & PT_WRITABLE)
 		flags |= PAGE_WRITE;
 
-	vaddr = ALIGN_PAGE(ph.p_vaddr);
+	vaddr = ALIGN_PAGE_DOWN(ph.p_vaddr);
 	for(uint64_t pages = 0; pages <= (ph.p_memsz / PAGE_SIZE); pages++, vaddr += PAGE_SIZE) {
 		vmm_map_page2((uintptr_t)pmm_calloc, vaddr, flags);
 	}
 
-	vfs_read(file, ph.p_offset, (void*)ALIGN_PAGE(ph.p_vaddr), ph.p_filesz);
+	vfs_read(file, ph.p_offset, (void*)ph.p_vaddr, ph.p_filesz);
 
 	// Note: If the kernel CPL=0 writes to a user page, the page loses its USER-bit. Need to remap
 	if(!(process->kernel_mode)) {
 		flags |= PAGE_USER;
-		vaddr = ALIGN_PAGE(ph.p_vaddr);
+		vaddr = ALIGN_PAGE_DOWN(ph.p_vaddr);
 		for(uint64_t pages = 0; pages <= (ph.p_memsz / PAGE_SIZE); pages++, vaddr += PAGE_SIZE) {
 			vmm_set_page_flags(vaddr, flags);
 		}

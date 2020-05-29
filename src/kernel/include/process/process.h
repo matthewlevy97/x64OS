@@ -1,7 +1,10 @@
 #pragma once
 
+#include <fs/vfs.h>
 #include <mm/paging.h>
 #include <stdint.h>
+
+#define PROCESS_MAX_FILE_DESCRIPTORS 256
 
 #define PROCESS_NAME_LENGTH 128
 
@@ -37,10 +40,14 @@ struct __process {
 	uint64_t tid, next_tid;
 	uintptr_t stack_pointer;
 	uintptr_t kernel_stack_pointer;
+	
+	vfs_node_t *files;
 };
 typedef struct __process* process_t;
 
 process_t thread_create(process_t parent_proc, const char *name, bool kernel_mode, void (*entry_point)(void));
 process_t process_create(process_t parent_proc, const char *path, bool kernel_mode);
+
+int32_t process_free_file_descriptor_index(process_t process);
 
 void dump_process(process_t process);

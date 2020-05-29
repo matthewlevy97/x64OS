@@ -83,7 +83,7 @@ entry_SYSCALL_64:
 
 	/* Ensure valid SYSCALL */
 	cmp rdi, SYSCALL_NUMBER
-	jae .syscall_done
+	jae 1f
 
 	/* 3rd argument stored in r10 because rcx used by SYSCALL/SYSRET */
 	mov rcx, r10
@@ -92,14 +92,27 @@ entry_SYSCALL_64:
 	movabs rax, offset syscall_table
 	shl rdi, 3
 	add rax, rdi
+
+	/* Correct argument placement (aka remove syscall number from the function call) */
+	mov rdi, rsi
+	mov rsi, rdx
+	mov rdx, rcx
+	mov rcx, r8
+	mov r8, r9
+
 	call [rax]
-.syscall_done:
+1:
+
+	/* Clear registers */
+	xor rsi, rsi
+	xor rdx, rdx
+	xor r10, r10
+	xor r8, r8
+	xor r9, r9
 
 	/* Restore for SYSRET */
 	popq r11
 	popq rcx
-
-	// TODO: Do I need to clear registers here??
 
 	/* Restore original stack */
 	mov gs:0x4, rsp
