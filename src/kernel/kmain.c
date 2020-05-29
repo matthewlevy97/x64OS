@@ -2,6 +2,7 @@
 #include <amd64/cpu.h>
 #include <assert.h>
 #include <boot/multiboot2.h>
+#include <drivers/null.h>
 #include <fs/initrd/initrd.h>
 #include <fs/vfs.h>
 #include <io/serial.h>
@@ -19,7 +20,7 @@ void stage2()
 {
 	debug_ok("Stage 2 Loaded!\n");
 
-	scheduler_add_process(process_create(NULL, "./apps/test_app", false));
+	scheduler_add_process(process_create(NULL, "/dev/initrd/apps/test_app", false));
 
 	get_current_process()->state = PROCESS_IDLE;
 	while(1);
@@ -44,7 +45,9 @@ void kmain(uint64_t multiboot_magic, void *multiboot_data)
 	cpu_init();
 	debug_ok("CPU Initialized\n");
 
-	vfs_init(&initrd_fs);
+	vfs_init();
+	initrd_init();
+	null_driver_init();
 
 	timer_init();
 
@@ -56,8 +59,7 @@ void kmain(uint64_t multiboot_magic, void *multiboot_data)
 
 	// Must not be in an atomic state at this point
 	ASSERT(!is_atomic());
-
-	//scheduler_init(process_create(NULL, "./apps/test_app", false));
+	
 	scheduler_init(thread_create(NULL, "stage2", true, stage2));
 
 	while(1);

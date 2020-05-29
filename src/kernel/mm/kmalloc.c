@@ -22,6 +22,7 @@ static size_t size_round_up(size_t size);
 void kmalloc_init(uintptr_t base_address)
 {
 	size_t buddy_size_paged;
+	page_directory_t boot_pagedir;
 	
 	buddy_nodes = (struct buddy_metadata*)base_address;
 	
@@ -31,9 +32,11 @@ void kmalloc_init(uintptr_t base_address)
 		buddy_size_paged = PAGE_SIZE;
 	}
 
+	boot_pagedir = vmm_get_boot_page_dir();
 	heap_base_address = (uint8_t*)buddy_nodes;
 	for(size_t i = 0; i < buddy_size_paged / PAGE_SIZE; i++) {
-		vmm_map_page2(pmm_calloc(), (uintptr_t)heap_base_address, PAGE_PRESENT | PAGE_WRITE | PAGE_NX);
+		vmm_map_page3(boot_pagedir, pmm_calloc(),
+			(uintptr_t)heap_base_address, PAGE_PRESENT | PAGE_WRITE | PAGE_NX);
 		heap_base_address += PAGE_SIZE;
 	}
 	heap_top_address = heap_base_address + HEAP_MAX_SIZE;

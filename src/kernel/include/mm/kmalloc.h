@@ -4,8 +4,9 @@
 
 ////////////////////////////////////////////////////////////////
 
-#define HEAP_SIZE_EXPONENT 25
-#define MIN_ALLOCATION_SIZE_EXPONENT 6
+// TODO: Changing these values WILL break the code. Need to find out why.
+#define HEAP_SIZE_EXPONENT 22
+#define MIN_ALLOCATION_SIZE_EXPONENT 4
 
 ////////////////////////////////////////////////////////////////
 

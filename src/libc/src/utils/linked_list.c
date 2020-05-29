@@ -47,22 +47,20 @@ List linked_list_insert(List list, size_t key, void *value)
 		list = linked_list_create(); 
 
 	entry = malloc(sizeof(struct linked_list_entry));
-	entry->next  = NULL;
-	entry->prev  = NULL;
+	entry->next  = entry;
+	entry->prev  = entry;
 	entry->key   = key;
 	entry->value = value;
 
 	if(list->head) {
-		// XXX: This is not thread safe as this breaks the circular nature causing problems if traversing
+		entry->next = list->head;
+		entry->prev = list->head->prev;
+
 		list->head->prev->next = entry;
+		list->head->prev = entry;
 	} else {
 		list->head = entry;
 	}
-
-	entry->prev = list->head->prev;
-	entry->next = list->head;
-
-	list->head->prev = entry;
 
 	list->length++;
 

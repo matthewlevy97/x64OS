@@ -38,6 +38,7 @@
 typedef uint64_t* page_directory_t;
 
 page_directory_t vmm_get_page_dir();
+page_directory_t vmm_get_boot_page_dir();
 void vmm_load_page_dir(page_directory_t page_dir);
 
 page_directory_t vmm_create_page_dir();

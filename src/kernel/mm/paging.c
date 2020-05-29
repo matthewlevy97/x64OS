@@ -19,6 +19,11 @@ page_directory_t vmm_get_page_dir()
 	return current_p4;
 }
 
+page_directory_t vmm_get_boot_page_dir()
+{
+	return base_p4;
+}
+
 void vmm_load_page_dir(page_directory_t page_dir)
 {
 	current_p4 = (page_directory_t)V2P(page_dir);

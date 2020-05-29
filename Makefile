@@ -82,7 +82,7 @@ apps:
 ramdisk:
 	@mkdir -p $(SYSROOT)/ramdisk/
 	@echo "Adding files to initrd.img:"
-	@tar cvf $(SYSROOT)/boot/initrd.img -C $(SYSROOT)/ramdisk/ .
+	@cd $(SYSROOT)/ramdisk && tar cvf $(SYSROOT)/boot/initrd.img * 
 	@rm -rf $(SYSROOT)/ramdisk/
 
 mkiso: all

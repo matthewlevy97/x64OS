@@ -7,7 +7,7 @@
 #define SCHEDULER_TIME_BETWEEN_TICKS      HERTZ_TO_NANOSECONDS(TIMER_FREQUENCY_HERTZ)
 
 
-void scheduler_init();
+void scheduler_init(process_t process);
 void scheduler_run();
 
 void scheduler_add_process(process_t process);

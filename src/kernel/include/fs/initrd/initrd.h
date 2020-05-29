@@ -2,15 +2,14 @@
 
 #include <fs/vfs.h>
 
-extern filesystem_t initrd_fs;
+#define INITRD_MOUNT_POINT "/dev/initrd"
 
 int initrd_init();
-int initrd_destroy();
 
-file_t initrd_open(const char *filename, struct vfs_file_info *info);
-void initrd_close(file_t file);
+void initrd_open(vfs_node_t node, uint32_t flags);
+void initrd_close(vfs_node_t node);
 
-ssize_t initrd_read(file_t file, void *buf, size_t nbyte);
-ssize_t initrd_write(file_t file, const void *buf, size_t nbyte);
+ssize_t initrd_read(vfs_node_t node, uint64_t offset, void *buf, size_t nbyte);
+ssize_t initrd_write(vfs_node_t node, uint64_t offset, const void *buf, size_t nbyte);
 
-off_t initrd_lseek(file_t file, off_t offset, SeekWhence whence);
+vfs_node_t initrd_findnode(vfs_node_t node, const char *name);
