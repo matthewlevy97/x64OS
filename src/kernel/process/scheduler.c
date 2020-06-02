@@ -16,6 +16,10 @@ void scheduler_init(process_t process)
 {
 	uint64_t tmp;
 
+	if(!process) {
+		PANIC("scheduler_init(NULL)");
+	}
+
 	atomic_begin();
 
 	blocked_list = linked_list_create();
@@ -92,6 +96,8 @@ no_task_switch:
 
 void scheduler_add_process(process_t process)
 {
+	if(!process) return;
+
 	atomic_begin();
 
 	linked_list_insert(running_list, process->pid, process);

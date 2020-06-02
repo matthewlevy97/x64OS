@@ -37,6 +37,7 @@
 #define ALIGN_PAGE_DOWN(x) ALIGN_DOWN((x), PAGE_SIZE)
 
 typedef uint64_t* page_directory_t;
+typedef uint64_t vm_flags_t;
 
 page_directory_t vmm_get_page_dir();
 page_directory_t vmm_get_boot_page_dir();
@@ -46,10 +47,10 @@ page_directory_t vmm_create_page_dir();
 page_directory_t vmm_clone_current_page_dir();
 
 void vmm_map_page(uintptr_t physical_address, uintptr_t virtual_address);
-void vmm_map_page2(uintptr_t physical_address, uintptr_t virtual_address, uint64_t flags);
-void vmm_map_page3(page_directory_t page_dir, uintptr_t physical_address, uintptr_t virtual_address, uint64_t flags);
+void vmm_map_page2(uintptr_t physical_address, uintptr_t virtual_address, vm_flags_t flags);
+void vmm_map_page3(page_directory_t page_dir, uintptr_t physical_address, uintptr_t virtual_address, vm_flags_t flags);
 
-void vmm_set_page_flags(uintptr_t virtual_address, uint64_t flags);
+void vmm_set_page_flags(uintptr_t virtual_address, vm_flags_t flags);
 
 bool is_virtual_page_present(uintptr_t page);
 

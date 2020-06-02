@@ -70,7 +70,7 @@ void vmm_map_page(uintptr_t physical_address, uintptr_t virtual_address)
 	*p1 = physical_address | PAGE_PRESENT | PAGE_WRITE;	
 }
 
-void vmm_map_page2(uintptr_t physical_address, uintptr_t virtual_address, uint64_t flags)
+void vmm_map_page2(uintptr_t physical_address, uintptr_t virtual_address, vm_flags_t flags)
 {
 	uint64_t *p1;
 
@@ -78,7 +78,7 @@ void vmm_map_page2(uintptr_t physical_address, uintptr_t virtual_address, uint64
 	*p1 = physical_address | flags;	
 }
 
-void vmm_map_page3(page_directory_t page_dir, uintptr_t physical_address, uintptr_t virtual_address, uint64_t flags)
+void vmm_map_page3(page_directory_t page_dir, uintptr_t physical_address, uintptr_t virtual_address, vm_flags_t flags)
 {
 	uint64_t *p1;
 
@@ -86,7 +86,7 @@ void vmm_map_page3(page_directory_t page_dir, uintptr_t physical_address, uintpt
 	*p1 = physical_address | flags;	
 }
 
-void vmm_set_page_flags(uintptr_t virtual_address, uint64_t flags)
+void vmm_set_page_flags(uintptr_t virtual_address, vm_flags_t flags)
 {
 	uint64_t *p1;
 

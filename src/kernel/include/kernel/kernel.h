@@ -21,3 +21,10 @@
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
+
+#ifndef __ASSEMBLER__
+
+#include <stdint.h>
+typedef uint64_t refcount_t;
+
+#endif

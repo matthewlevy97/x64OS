@@ -2,6 +2,10 @@
 
 #include <stddef.h>
 
+#define foreach(list, type, curr) for(type * curr = (list); curr != NULL; curr = curr->next)
+#define foreach_prev(list, type, curr, prev) \
+	for(type * curr = (list), * prev = NULL; curr != NULL; prev = curr, curr = curr->next)
+
 struct linked_list_entry {
 	struct linked_list_entry *next, *prev;
 	

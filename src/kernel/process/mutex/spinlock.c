@@ -13,7 +13,7 @@ void spinlock_acquire(spinlock_t *lock)
 
 void spinlock_release(spinlock_t *lock)
 {
-	ASSERT(__sync_bool_compare_and_swap(lock, SPIN_LOCKED, SPIN_UNLOCKED));
+	ASSERT(__sync_bool_compare_and_swap(lock, SPINLOCK_LOCKED, SPINLOCK_UNLOCKED));
 
 	atomic_end();
 }
@@ -22,7 +22,7 @@ bool spinlock_try_acquire(spinlock_t *lock)
 {
 	atomic_begin();
 
-	if(__sync_bool_compare_and_swap(lock, SPIN_UNLOCKED, SPIN_LOCKED)) {
+	if(__sync_bool_compare_and_swap(lock, SPINLOCK_UNLOCKED, SPINLOCK_LOCKED)) {
 		return true;
 	}
 

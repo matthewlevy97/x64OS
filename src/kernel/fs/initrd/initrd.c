@@ -75,6 +75,7 @@ vfs_node_t initrd_findnode(vfs_node_t node, const char *name)
 		return NULL;
 	}
 
+	strncpy(file->name, name, sizeof(file->name));
 	file->open  = initrd_open;
 	file->close = initrd_close;
 	file->read  = initrd_read;

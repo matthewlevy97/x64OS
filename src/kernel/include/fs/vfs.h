@@ -1,13 +1,14 @@
 #pragma once
 
 #include <fs/types.h>
+#include <kernel/kernel.h>
 #include <time.h>
 
 typedef struct __vfs_node {
-	char           name[256];
-	void          *device;
+	char            name[256];
+	void           *device;
 	
-	uint64_t        refcount;
+	refcount_t      refcount;
 	
 	mode_t          mode;
 	uid_t           uid;

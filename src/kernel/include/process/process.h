@@ -2,6 +2,7 @@
 
 #include <fs/vfs.h>
 #include <mm/paging.h>
+#include <process/mutex/spinlock.h>
 #include <stdint.h>
 
 #define PROCESS_MAX_FILE_DESCRIPTORS 256
@@ -15,12 +16,17 @@ typedef enum {
 	PROCESS_RUNNING,
 	PROCESS_IDLE,
 	PROCESS_SLEEP,
+	PROCESS_DESTROY,
 } PROCESS_STATE;
 
 struct __process {
-	uint64_t pid, ppid;
+	uint64_t pid;
 	char name[PROCESS_NAME_LENGTH];
 	bool kernel_mode;
+	
+	spinlock_t lock;
+	
+	struct __process *parent_proc;
 	
 	PROCESS_STATE state;
 	int exit_value;
@@ -37,10 +43,11 @@ struct __process {
 	
 	void (*entry_point)(void);
 	
-	uint64_t tid, next_tid;
+	uint64_t  tid, next_tid;
 	uintptr_t stack_pointer;
 	uintptr_t kernel_stack_pointer;
 	
+	vfs_node_t  executable;
 	vfs_node_t *files;
 };
 typedef struct __process* process_t;
@@ -49,5 +56,7 @@ process_t thread_create(process_t parent_proc, const char *name, bool kernel_mod
 process_t process_create(process_t parent_proc, const char *path, bool kernel_mode);
 
 int32_t process_free_file_descriptor_index(process_t process);
+
+void process_destory(process_t process);
 
 void dump_process(process_t process);
