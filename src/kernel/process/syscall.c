@@ -5,7 +5,7 @@
 #include <string.h>
 
 /*
- * If a syscall is added here, ensure the process/syscall.h::SYSCALL_NUMBER counter increases
+ * If a syscall is added here, ensure the sys/syscall.h::SYSCALL_NUMBER counter increases
 */
 
 uintptr_t syscall_table[] = {
